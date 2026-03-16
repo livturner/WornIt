@@ -1,6 +1,7 @@
 export const typography = {
   fonts: {
-    cormorant: 'Cormorant-Italic',
+    cormorantItalic: 'CormorantGaramond-Italic',
+    cormorantBold: 'CormorantGaramond-Bold',
     system: 'System',
   },
   sizes: {

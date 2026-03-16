@@ -83,7 +83,7 @@ const styles = StyleSheet.create({
   appName: {
     color: colors.ivory,
     fontSize: typography.sizes.lg,
-    fontWeight: typography.weights.bold,
+    fontFamily: typography.fonts.cormorantItalic,
     letterSpacing: 3,
   },
   bottomBar: {
