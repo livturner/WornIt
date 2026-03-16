@@ -3,11 +3,13 @@ import { StyleSheet, Text, View, TouchableOpacity, ActivityIndicator } from 'rea
 import { CameraView, useCameraPermissions } from 'expo-camera'
 import { colors } from '../constants/colors'
 import { typography } from '../constants/typography'
+import { Ionicons } from '@expo/vector-icons'
 
 export default function CameraScreen() {
   const [permission, requestPermission] = useCameraPermissions()
   const [photo, setPhoto] = useState(null)
   const [isLoading, setIsLoading] = useState(false)
+  const [facing, setFacing] = useState('front')
   const cameraRef = useRef(null)
 
   // Permission still loading
@@ -44,11 +46,17 @@ export default function CameraScreen() {
 
   return (
     <View style={styles.container}>
-      <CameraView style={styles.camera} facing="front" ref={cameraRef}>
+      <CameraView style={styles.camera} facing={facing} ref={cameraRef}>
 
         {/* Top bar */}
         <View style={styles.topBar}>
           <Text style={styles.appName}>WornIt</Text>
+          <TouchableOpacity 
+            onPress={() => setFacing(facing === 'front' ? 'back' : 'front')}
+            style={styles.flipButton}
+          >
+            <Ionicons name="camera-reverse-outline" size={28} color={colors.ivory} />
+          </TouchableOpacity>
         </View>
 
         {/* Bottom controls */}
@@ -78,6 +86,8 @@ const styles = StyleSheet.create({
   topBar: {
     paddingTop: 60,
     paddingHorizontal: 24,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     alignItems: 'center',
   },
   appName: {
@@ -91,6 +101,9 @@ const styles = StyleSheet.create({
     bottom: 60,
     width: '100%',
     alignItems: 'center',
+  },
+  flipButton: {
+    padding: 8,
   },
   shutterButton: {
     width: 72,
