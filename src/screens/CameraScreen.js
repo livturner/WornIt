@@ -1,16 +1,37 @@
-import { useRef, useState } from 'react'
+import { useRef, useState, useEffect } from 'react'
 import { StyleSheet, Text, View, TouchableOpacity, ActivityIndicator } from 'react-native'
 import { CameraView, useCameraPermissions } from 'expo-camera'
 import { colors } from '../constants/colors'
 import { typography } from '../constants/typography'
 import { Ionicons } from '@expo/vector-icons'
+import { identifyOutfit } from '../services/openai'
 
 export default function CameraScreen() {
   const [permission, requestPermission] = useCameraPermissions()
   const [photo, setPhoto] = useState(null)
   const [isLoading, setIsLoading] = useState(false)
   const [facing, setFacing] = useState('front')
+  const [items, setItems] = useState([])
   const cameraRef = useRef(null)
+
+  useEffect(() => {
+  if (photo) {
+    analysePhoto()
+  }
+}, [photo])
+
+const analysePhoto = async () => {
+  setIsLoading(true)
+  try {
+    const identified = await identifyOutfit(photo)
+    setItems(identified)
+    console.log('Items identified:', identified)
+  } catch (error) {
+    console.error('GPT Vision error:', error)
+  } finally {
+    setIsLoading(false)
+  }
+}
 
   // Permission still loading
   if (!permission) {
