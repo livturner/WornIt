@@ -80,23 +80,27 @@ const analysePhoto = async () => {
     />
     )
   }
-
   return (
     <View style={styles.container}>
-      {photo ? (
-        <Image source={{ uri: photo }} style={styles.camera} />
-      ) : (
-        <CameraView style={styles.camera} facing={facing} ref={cameraRef}>
-          <View style={styles.topBar}>
-            <Text style={styles.appName}>WornIt</Text>
-            <TouchableOpacity
-              onPress={() => setFacing(facing === 'front' ? 'back' : 'front')}
-              style={styles.flipButton}
-            >
-              <Ionicons name="camera-reverse-outline" size={28} color={colors.ivory} />
-            </TouchableOpacity>
-          </View>
-          <View style={styles.bottomBar}>
+
+      <View style={styles.topBar}>
+        <Text style={styles.appName}>WornIt</Text>
+      </View>
+
+      <View style={styles.viewfinder}>
+        {photo ? (
+          <Image source={{ uri: photo }} style={styles.camera} />
+        ) : (
+          <CameraView style={styles.camera} facing={facing} ref={cameraRef} />
+        )}
+      </View>
+
+      <View style={styles.controlsBar}>
+        {isLoading ? (
+          <ActivityIndicator size="large" color={colors.ivory} style={styles.loader} />
+        ) : (
+          <>
+            <View style={styles.sideControl} />
             <TouchableOpacity
               style={styles.shutterButton}
               onPress={takePhoto}
@@ -104,24 +108,18 @@ const analysePhoto = async () => {
             >
               <View style={styles.shutterInner} />
             </TouchableOpacity>
-          </View>
-        </CameraView>
-      )}
+            <View style={styles.sideControl}>
+              <TouchableOpacity
+                onPress={() => setFacing(facing === 'front' ? 'back' : 'front')}
+                style={styles.flipButton}
+              >
+                <Ionicons name="camera-reverse-outline" size={28} color={colors.ivory} />
+              </TouchableOpacity>
+            </View>
+          </>
+        )}
+      </View>
 
-      {photo && (
-        <View style={styles.bottomBar}>
-          {isLoading ? (
-            <ActivityIndicator size="large" color={colors.ivory} />
-          ) : (
-            <TouchableOpacity
-              style={styles.retakeButton}
-              onPress={() => setPhoto(null)}
-            >
-              <Text style={styles.retakeText}>Retake</Text>
-            </TouchableOpacity>
-          )}
-        </View>
-      )}
     </View>
   )
 }
@@ -129,16 +127,11 @@ const analysePhoto = async () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.espressoBark,
-  },
-  camera: {
-    flex: 1,
+    backgroundColor: colors.oliveGreen,
   },
   topBar: {
     paddingTop: 60,
-    paddingHorizontal: 24,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    paddingBottom: 12,
     alignItems: 'center',
   },
   appName: {
@@ -147,20 +140,31 @@ const styles = StyleSheet.create({
     fontFamily: typography.fonts.cormorantItalic,
     letterSpacing: 3,
   },
-  bottomBar: {
-    position: 'absolute',
-    bottom: 60,
-    width: '100%',
-    alignItems: 'center',
+  viewfinder: {
+    flex: 1,
+    marginHorizontal: 12,
+    borderRadius: 20,
+    overflow: 'hidden',
+    backgroundColor: '#000',
   },
-  flipButton: {
-    padding: 8,
+  camera: {
+    flex: 1,
+  },
+  controlsBar: {
+    height: 130,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 40,
+  },
+  sideControl: {
+    width: 44,
+    alignItems: 'center',
   },
   shutterButton: {
     width: 72,
     height: 72,
     borderRadius: 36,
-    backgroundColor: 'transparent',
     borderWidth: 4,
     borderColor: colors.ivory,
     justifyContent: 'center',
@@ -172,9 +176,15 @@ const styles = StyleSheet.create({
     borderRadius: 28,
     backgroundColor: colors.ivory,
   },
+  flipButton: {
+    padding: 8,
+  },
+  loader: {
+    flex: 1,
+  },
   permissionContainer: {
     flex: 1,
-    backgroundColor: colors.espressoBark,
+    backgroundColor: colors.oliveGreen,
     justifyContent: 'center',
     alignItems: 'center',
     padding: 40,
@@ -192,17 +202,6 @@ const styles = StyleSheet.create({
     borderRadius: 30,
   },
   permissionButtonText: {
-    color: colors.ivory,
-    fontSize: typography.sizes.md,
-    fontWeight: typography.weights.bold,
-  },
-  retakeButton: {
-  backgroundColor: colors.wineRed,
-  paddingVertical: 14,
-  paddingHorizontal: 32,
-  borderRadius: 30,
-  },
-  retakeText: {
     color: colors.ivory,
     fontSize: typography.sizes.md,
     fontWeight: typography.weights.bold,

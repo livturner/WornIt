@@ -1,6 +1,6 @@
 export const colors = {
   steelBlue: '#4682B4',
-  espressoBark: '#1C0F0A',
+  oliveGreen: '#2E3328',
   wineRed: '#58181F',
   ivory: '#FFFFF0',
 }

@@ -58,17 +58,45 @@ export default function ConfirmationScreen({ photo, items: initialItems, onSave,
     setEditingId(items.length)
   }
 
-  const categoryColor = (category) => {
-    switch (category) {
-      case 'tops': return colors.steelBlue
-      case 'bottoms': return colors.wineRed
-      case 'outerwear': return '#5C7A5C'
-      case 'shoes': return '#8B6914'
-      case 'accessories': return '#7B5EA7'
-      case 'dresses': return '#C4627A'
-      default: return colors.espressoBark
+  const colorToHex = (colorName) => {
+    const colorsMap = {
+        red: '#E63946',
+        navy: '#1B2A4A',
+        blue: '#4682B4',
+        white: '#F8F8F8',
+        black: '#1A1A1A',
+        grey: '#9E9E9E',
+        gray: '#9E9E9E',
+        brown: '#8B5E3C',
+        cream: '#F5F0E8',
+        beige: '#E8DCC8',
+        green: '#4A7C59',
+        pink: '#E8A0B4',
+        yellow: '#F4D35E',
+        orange: '#F4845F',
+        purple: '#7B5EA7',
+        burgundy: '#6D1E2A',
+        tan: '#C9A96E',
+        camel: '#C19A6B',
+        ivory: '#FFFFF0',
+        khaki: '#BDB76B',
+        denim: '#5B7FA6',
     }
-  }
+    const key = colorName.toLowerCase().split(' ').pop()
+    return colorsMap[key] || '#888888'
+    }
+
+    const categoryColor = (category) => {
+        switch (category) {
+            case 'tops': return colors.steelBlue
+            case 'bottoms': return colors.wineRed
+            case 'outerwear': return '#5C7A5C'
+            case 'shoes': return '#8B6914'
+            case 'accessories': return '#7B5EA7'
+            case 'dresses': return '#C4627A'
+            default: return colors.oliveGreen
+        }
+    }
 
   return (
     <View style={styles.container}>
@@ -106,7 +134,7 @@ export default function ConfirmationScreen({ photo, items: initialItems, onSave,
             style={[styles.card, item.confirmed && styles.cardConfirmed]}
           >
             {/* Colour swatch */}
-            <View style={[styles.swatch, { backgroundColor: item.color }]} />
+            <View style={[styles.swatch, { backgroundColor: colorToHex(item.color) }]} />
 
             {/* Item details */}
             <View style={styles.cardContent}>
@@ -135,7 +163,7 @@ export default function ConfirmationScreen({ photo, items: initialItems, onSave,
             {/* Actions */}
             <View style={styles.cardActions}>
               <TouchableOpacity onPress={() => deleteItem(index)} style={styles.deleteButton}>
-                <Ionicons name="trash-outline" size={18} color={colors.wineRed} />
+                <Ionicons name="trash-outline" size={18} color={colors.ivory} />
               </TouchableOpacity>
               <TouchableOpacity
                 onPress={() => toggleConfirm(index)}
@@ -181,7 +209,7 @@ export default function ConfirmationScreen({ photo, items: initialItems, onSave,
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.espressoBark,
+    backgroundColor: colors.oliveGreen,
   },
   thumbnail: {
     width: '100%',
@@ -214,7 +242,8 @@ const styles = StyleSheet.create({
     fontWeight: typography.weights.bold,
   },
   list: {
-    flex: 1,
+    flexGrow: 0,
+    maxHeight: '45%',
   },
   listContent: {
     paddingHorizontal: 16,
@@ -315,7 +344,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   saveButtonDisabled: {
-    backgroundColor: '#2A3A4A',
+    backgroundColor: '#1A1A2A',
+    borderWidth: 1,
+    borderColor: '#333',
   },
   saveButtonText: {
     color: colors.ivory,
