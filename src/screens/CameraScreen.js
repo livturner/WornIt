@@ -5,6 +5,7 @@ import { colors } from '../constants/colors'
 import { typography } from '../constants/typography'
 import { Ionicons } from '@expo/vector-icons'
 import { identifyOutfit } from '../services/openai'
+import ConfirmationScreen from './ConfirmationScreen'
 
 export default function CameraScreen() {
   const [permission, requestPermission] = useCameraPermissions()
@@ -33,6 +34,15 @@ const analysePhoto = async () => {
   }
 }
 
+  const takePhoto = async () => {
+    if (cameraRef.current) {
+      setIsLoading(true)
+      const result = await cameraRef.current.takePictureAsync()
+      setPhoto(result.uri)
+      console.log('Photo taken:', result.uri)
+    }
+  }
+
   // Permission still loading
   if (!permission) {
     return <View style={styles.container} />
@@ -55,14 +65,20 @@ const analysePhoto = async () => {
     )
   }
 
-  const takePhoto = async () => {
-    if (cameraRef.current) {
-      setIsLoading(true)
-      const result = await cameraRef.current.takePictureAsync()
-      setPhoto(result.uri)
-      console.log('Photo taken:', result.uri)
-      setIsLoading(false)
-    }
+  if (photo && !isLoading && items.length > 0) {
+  return (
+    <ConfirmationScreen
+      photo={photo}
+      items={items}
+      onRetake={() => {
+        setPhoto(null)
+        setItems([])
+      }}
+      onSave={(confirmedItems) => {
+        console.log('Saving to wardrobe:', confirmedItems)
+      }}
+    />
+    )
   }
 
   return (
