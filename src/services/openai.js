@@ -19,7 +19,7 @@ export async function identifyOutfit(photoUri) {
       'Authorization': `Bearer ${apiKey}`,
     },
     body: JSON.stringify({
-      model: 'gpt-4o',
+      model: 'gpt-4o-mini',
       max_tokens: 500,
       messages: [
         {
@@ -33,14 +33,16 @@ export async function identifyOutfit(photoUri) {
             },
             {
               type: 'text',
-              text: `You are a fashion assistant helping build a wardrobe app. 
-              Identify each visible clothing item and accessory in this outfit photo.
-              Return a JSON array only, no other text. Each item should have:
-              - name: short descriptive name (e.g. "white linen shirt")
-              - category: one of [tops, bottoms, dresses, outerwear, shoes, accessories]
-              - color: primary color
-              - confirmed: false
-              Example: [{"name":"white linen shirt","category":"tops","color":"white","confirmed":false}]`,
+              text: `You are a fashion assistant helping build a wardrobe app.
+                    Identify each visible clothing item and accessory in this outfit photo.
+                    Be specific and descriptive — include fit, fabric if visible, and style details.
+                    Good examples: "slim fit mid-wash denim jeans", "oversized cream ribbed knit jumper", "white leather chunky sole trainers"
+                    Bad examples: "jeans", "jumper", "shoes"
+                    Return a JSON array only, no other text, no markdown. Each item should have:
+                    - name: descriptive name including fit, fabric, style where visible
+                    - category: one of [tops, bottoms, dresses, outerwear, shoes, accessories]
+                    - color: primary color
+                    - confirmed: false`,
             },
           ],
         },

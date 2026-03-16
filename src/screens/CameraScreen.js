@@ -1,5 +1,5 @@
 import { useRef, useState, useEffect } from 'react'
-import { StyleSheet, Text, View, TouchableOpacity, ActivityIndicator } from 'react-native'
+import { StyleSheet, Text, View, TouchableOpacity, ActivityIndicator, Image } from 'react-native'
 import { CameraView, useCameraPermissions } from 'expo-camera'
 import { colors } from '../constants/colors'
 import { typography } from '../constants/typography'
@@ -67,31 +67,45 @@ const analysePhoto = async () => {
 
   return (
     <View style={styles.container}>
-      <CameraView style={styles.camera} facing={facing} ref={cameraRef}>
+      {photo ? (
+        <Image source={{ uri: photo }} style={styles.camera} />
+      ) : (
+        <CameraView style={styles.camera} facing={facing} ref={cameraRef}>
+          <View style={styles.topBar}>
+            <Text style={styles.appName}>WornIt</Text>
+            <TouchableOpacity
+              onPress={() => setFacing(facing === 'front' ? 'back' : 'front')}
+              style={styles.flipButton}
+            >
+              <Ionicons name="camera-reverse-outline" size={28} color={colors.ivory} />
+            </TouchableOpacity>
+          </View>
+          <View style={styles.bottomBar}>
+            <TouchableOpacity
+              style={styles.shutterButton}
+              onPress={takePhoto}
+              disabled={isLoading}
+            >
+              <View style={styles.shutterInner} />
+            </TouchableOpacity>
+          </View>
+        </CameraView>
+      )}
 
-        {/* Top bar */}
-        <View style={styles.topBar}>
-          <Text style={styles.appName}>WornIt</Text>
-          <TouchableOpacity 
-            onPress={() => setFacing(facing === 'front' ? 'back' : 'front')}
-            style={styles.flipButton}
-          >
-            <Ionicons name="camera-reverse-outline" size={28} color={colors.ivory} />
-          </TouchableOpacity>
-        </View>
-
-        {/* Bottom controls */}
+      {photo && (
         <View style={styles.bottomBar}>
           {isLoading ? (
             <ActivityIndicator size="large" color={colors.ivory} />
           ) : (
-            <TouchableOpacity style={styles.shutterButton} onPress={takePhoto}>
-              <View style={styles.shutterInner} />
+            <TouchableOpacity
+              style={styles.retakeButton}
+              onPress={() => setPhoto(null)}
+            >
+              <Text style={styles.retakeText}>Retake</Text>
             </TouchableOpacity>
           )}
         </View>
-
-      </CameraView>
+      )}
     </View>
   )
 }
@@ -162,6 +176,17 @@ const styles = StyleSheet.create({
     borderRadius: 30,
   },
   permissionButtonText: {
+    color: colors.ivory,
+    fontSize: typography.sizes.md,
+    fontWeight: typography.weights.bold,
+  },
+  retakeButton: {
+  backgroundColor: colors.wineRed,
+  paddingVertical: 14,
+  paddingHorizontal: 32,
+  borderRadius: 30,
+  },
+  retakeText: {
     color: colors.ivory,
     fontSize: typography.sizes.md,
     fontWeight: typography.weights.bold,
