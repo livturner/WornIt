@@ -82,7 +82,7 @@ export default function ConfirmationScreen({ photo, items: initialItems, onSave,
         khaki: '#BDB76B',
         denim: '#5B7FA6',
     }
-    const key = colorName.toLowerCase().split(' ').pop()
+    const key = colorName.toLowerCase().split('/')[0].split(' ').pop()
     return colorsMap[key] || '#888888'
     }
 
@@ -252,7 +252,7 @@ const styles = StyleSheet.create({
   card: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#2A1A12',
+    backgroundColor: '#1E2318',
     borderRadius: 12,
     marginBottom: 10,
     padding: 12,
@@ -322,7 +322,7 @@ const styles = StyleSheet.create({
     padding: 16,
     gap: 12,
     borderTopWidth: 1,
-    borderTopColor: '#2A1A12',
+    borderTopColor: '#1E2318',
   },
   retakeButton: {
     flex: 1,
@@ -344,9 +344,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   saveButtonDisabled: {
-    backgroundColor: '#1A1A2A',
+    backgroundColor: '#2a2e25',
     borderWidth: 1,
-    borderColor: '#333',
+    borderColor: '#444',
   },
   saveButtonText: {
     color: colors.ivory,
