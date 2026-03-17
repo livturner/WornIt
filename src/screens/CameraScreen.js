@@ -6,6 +6,7 @@ import { typography } from '../constants/typography'
 import { Ionicons } from '@expo/vector-icons'
 import { identifyOutfit } from '../services/openai'
 import ConfirmationScreen from './ConfirmationScreen'
+import { saveOutfitLog } from '../services/wardrobeService'
 
 export default function CameraScreen() {
   const [permission, requestPermission] = useCameraPermissions()
@@ -13,6 +14,7 @@ export default function CameraScreen() {
   const [isLoading, setIsLoading] = useState(false)
   const [facing, setFacing] = useState('front')
   const [items, setItems] = useState([])
+  const [isSaving, setIsSaving] = useState(false)
   const cameraRef = useRef(null)
 
   useEffect(() => {
@@ -74,8 +76,18 @@ const analysePhoto = async () => {
         setPhoto(null)
         setItems([])
       }}
-      onSave={(confirmedItems) => {
-        console.log('Saving to wardrobe:', confirmedItems)
+      onSave={async (confirmedItems) => {
+        setIsSaving(true)
+        try {
+          await saveOutfitLog(photo, confirmedItems)
+          console.log('Saved successfully')
+          setPhoto(null)
+          setItems([])
+        } catch (error) {
+          console.error('Error saving outfit log:', error)
+        } finally {
+          setIsSaving(false)
+        }
       }}
     />
     )
