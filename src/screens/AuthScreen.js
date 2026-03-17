@@ -1,5 +1,9 @@
 import { useState } from 'react'
-import { StyleSheet, Text, View, TouchableOpacity, TextInput, ActivityIndicator } from 'react-native'
+import {
+  StyleSheet, Text, View, TextInput,
+  ActivityIndicator, KeyboardAvoidingView,
+  TouchableWithoutFeedback, Keyboard, Platform, Pressable
+} from 'react-native'
 import { colors } from '../constants/colors'
 import { typography } from '../constants/typography'
 import { supabase } from '../services/supabase'
@@ -14,6 +18,7 @@ export default function AuthScreen() {
   const handleAuth = async () => {
     setIsLoading(true)
     setError(null)
+    Keyboard.dismiss()
     try {
       if (isSignUp) {
         const { error } = await supabase.auth.signUp({ email, password })
@@ -30,64 +35,83 @@ export default function AuthScreen() {
   }
 
   return (
-    <View style={styles.container}>
+    <KeyboardAvoidingView
+      style={styles.container}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+    >
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+        <View style={styles.inner}>
 
-      <View style={styles.header}>
-        <Text style={styles.appName}>
-          <Text style={styles.appNameWhite}>Worn</Text>
-          <Text style={styles.appNameBlue}>It</Text>
-        </Text>
-        <Text style={styles.tagline}>your daily outfit diary</Text>
-      </View>
-
-      <View style={styles.form}>
-        <TextInput
-          style={styles.input}
-          value={email}
-          onChangeText={setEmail}
-          placeholder="Email"
-          placeholderTextColor="#666"
-          keyboardType="email-address"
-          autoCapitalize="none"
-        />
-        <TextInput
-          style={styles.input}
-          value={password}
-          onChangeText={setPassword}
-          placeholder="Password"
-          placeholderTextColor="#666"
-          secureTextEntry
-        />
-
-        {error && (
-          <Text style={styles.errorText}>{error}</Text>
-        )}
-
-        <TouchableOpacity
-          style={styles.button}
-          onPress={handleAuth}
-          disabled={isLoading}
-        >
-          {isLoading ? (
-            <ActivityIndicator color={colors.ivory} />
-          ) : (
-            <Text style={styles.buttonText}>
-              {isSignUp ? 'Create account' : 'Log in'}
+          {/* Logo */}
+          <View style={styles.header}>
+            <Text style={styles.appName}>
+              <Text style={styles.appNameWhite}>Worn</Text>
+              <Text style={styles.appNameBlue}>It</Text>
             </Text>
-          )}
-        </TouchableOpacity>
+            <Text style={styles.tagline}>your daily outfit diary</Text>
+          </View>
 
-        <TouchableOpacity
-          style={styles.switchButton}
-          onPress={() => setIsSignUp(!isSignUp)}
-        >
-          <Text style={styles.switchText}>
-            {isSignUp ? 'Already have an account? Log in' : "Don't have an account? Sign up"}
-          </Text>
-        </TouchableOpacity>
-      </View>
+          {/* Tab switcher */}
+          <View style={styles.tabRow}>
+            <Pressable
+              style={[styles.tab, !isSignUp && styles.tabActive]}
+              onPress={() => { setIsSignUp(false); setError(null) }}
+            >
+              <Text style={[styles.tabText, !isSignUp && styles.tabTextActive]}>Log in</Text>
+            </Pressable>
+            <Pressable
+              style={[styles.tab, isSignUp && styles.tabActive]}
+              onPress={() => { setIsSignUp(true); setError(null) }}
+            >
+              <Text style={[styles.tabText, isSignUp && styles.tabTextActive]}>Sign up</Text>
+            </Pressable>
+          </View>
 
-    </View>
+          {/* Form */}
+          <View style={styles.form}>
+            <TextInput
+              style={styles.input}
+              value={email}
+              onChangeText={setEmail}
+              placeholder="Email"
+              placeholderTextColor="#666"
+              keyboardType="email-address"
+              autoCapitalize="none"
+              returnKeyType="next"
+            />
+            <TextInput
+              style={styles.input}
+              value={password}
+              onChangeText={setPassword}
+              placeholder="Password"
+              placeholderTextColor="#666"
+              secureTextEntry
+              returnKeyType="done"
+              onSubmitEditing={handleAuth}
+            />
+
+            {error && (
+              <Text style={styles.errorText}>{error}</Text>
+            )}
+
+            <Pressable
+              style={({ pressed }) => [styles.button, pressed && styles.buttonPressed]}
+              onPress={handleAuth}
+              disabled={isLoading}
+            >
+              {isLoading ? (
+                <ActivityIndicator color={colors.ivory} />
+              ) : (
+                <Text style={styles.buttonText}>
+                  {isSignUp ? 'Create account' : 'Log in'}
+                </Text>
+              )}
+            </Pressable>
+          </View>
+
+        </View>
+      </TouchableWithoutFeedback>
+    </KeyboardAvoidingView>
   )
 }
 
@@ -95,12 +119,15 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.oliveGreen,
+  },
+  inner: {
+    flex: 1,
     justifyContent: 'center',
     padding: 32,
   },
   header: {
     alignItems: 'center',
-    marginBottom: 48,
+    marginBottom: 40,
   },
   appName: {
     fontSize: typography.sizes.xxl,
@@ -119,6 +146,31 @@ const styles = StyleSheet.create({
     fontSize: typography.sizes.sm,
     letterSpacing: 1,
   },
+  tabRow: {
+    flexDirection: 'row',
+    backgroundColor: '#1E2318',
+    borderRadius: 12,
+    marginBottom: 24,
+    padding: 4,
+  },
+  tab: {
+    flex: 1,
+    paddingVertical: 10,
+    alignItems: 'center',
+    borderRadius: 10,
+  },
+  tabActive: {
+    backgroundColor: colors.oliveGreen,
+  },
+  tabText: {
+    color: '#666',
+    fontSize: typography.sizes.sm,
+    fontWeight: typography.weights.medium,
+  },
+  tabTextActive: {
+    color: colors.ivory,
+    fontWeight: typography.weights.bold,
+  },
   form: {
     gap: 12,
   },
@@ -132,7 +184,7 @@ const styles = StyleSheet.create({
     borderColor: '#333',
   },
   errorText: {
-    color: colors.wineRed,
+    color: '#E07070',
     fontSize: typography.sizes.sm,
     textAlign: 'center',
   },
@@ -143,17 +195,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginTop: 8,
   },
+  buttonPressed: {
+    opacity: 0.8,
+    transform: [{ scale: 0.98 }],
+  },
   buttonText: {
     color: colors.ivory,
     fontSize: typography.sizes.md,
     fontWeight: typography.weights.bold,
-  },
-  switchButton: {
-    alignItems: 'center',
-    padding: 12,
-  },
-  switchText: {
-    color: '#888',
-    fontSize: typography.sizes.sm,
   },
 })
