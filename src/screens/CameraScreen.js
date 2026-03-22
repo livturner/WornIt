@@ -8,7 +8,7 @@ import { identifyOutfit } from '../services/openai'
 import ConfirmationScreen from './ConfirmationScreen'
 import { saveOutfitLog } from '../services/wardrobeService'
 
-export default function CameraScreen() {
+export default function CameraScreen({navigation}) {
   const [permission, requestPermission] = useCameraPermissions()
   const [photo, setPhoto] = useState(null)
   const [isLoading, setIsLoading] = useState(false)
@@ -83,6 +83,7 @@ const analysePhoto = async () => {
           console.log('Saved successfully')
           setPhoto(null)
           setItems([])
+          navigation.navigate('Timeline')
         } catch (error) {
           console.error('Error saving outfit log:', error)
         } finally {

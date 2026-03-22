@@ -1,8 +1,9 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import {
   View, Text, ScrollView, Image,
   TouchableOpacity, ActivityIndicator, StyleSheet
 } from 'react-native'
+import { useFocusEffect } from '@react-navigation/native'
 import { colors } from '../constants/colors'
 import { typography } from '../constants/typography'
 import { fetchTimeline } from '../services/wardrobeService'
@@ -12,9 +13,11 @@ export default function TimelineScreen() {
   const [isLoading, setIsLoading] = useState(true)
   const [activeMonth, setActiveMonth] = useState('March')
 
-  useEffect(() => {
-    loadTimeline()
-  }, [])
+  useFocusEffect(
+    useCallback(() => {
+      loadTimeline()
+    }, [])
+  )
 
   const loadTimeline = async () => {
     try {
