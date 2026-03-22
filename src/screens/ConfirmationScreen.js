@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   TextInput,
   StyleSheet,
+  Pressable,
 } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import { colors } from '../constants/colors'
@@ -191,15 +192,19 @@ export default function ConfirmationScreen({ photo, items: initialItems, onSave,
         <TouchableOpacity style={styles.retakeButton} onPress={onRetake}>
           <Text style={styles.retakeText}>Retake</Text>
         </TouchableOpacity>
-        <TouchableOpacity
-          style={[styles.saveButton, !hasConfirmed && styles.saveButtonDisabled]}
+        < Pressable
+          style={({ pressed }) => [
+            styles.saveButton,
+            !hasConfirmed && styles.saveButtonDisabled,
+            pressed && hasConfirmed && { opacity: 0.8, transform: [{ scale: 0.98 }] },
+          ]}
           onPress={() => hasConfirmed && onSave(items.filter(i => i.confirmed))}
           disabled={!hasConfirmed}
         >
           <Text style={styles.saveButtonText}>
             Save to wardrobe{hasConfirmed ? ` (${confirmedCount})` : ''}
           </Text>
-        </TouchableOpacity>
+        </Pressable>
       </View>
 
     </View>
