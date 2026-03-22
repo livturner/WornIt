@@ -34,12 +34,12 @@ export async function saveOutfitLog(photoUri, confirmedItems) {
 
 async function uploadPhoto(photoUri, userId) {
   const response = await fetch(photoUri)
-  const blob = await response.blob()
+  const arraybuffer = await response.arrayBuffer()
   const fileName = `${userId}/${Date.now()}.jpg`
 
   const { error } = await supabase.storage
     .from('outfit-photos')
-    .upload(fileName, blob, { contentType: 'image/jpeg' })
+    .upload(fileName, arraybuffer, { contentType: 'image/jpeg' })
 
   if (error) throw error
 
@@ -87,4 +87,30 @@ async function saveOrUpdateItem(item, userId) {
     if (error) throw error
     return newItem
   }
+}
+
+export async function fetchTimeline() {
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) throw new Error('Not authenticated')
+
+  const { data, error } = await supabase
+    .from('logs')
+    .select(`
+      id,
+      photo_url,
+      logged_at,
+      log_items (
+        items (
+          name,
+          category,
+          color,
+          wear_count
+        )
+      )
+    `)
+    .eq('user_id', user.id)
+    .order('logged_at', { ascending: false })
+
+  if (error) throw error
+  return data
 }

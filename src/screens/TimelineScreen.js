@@ -1,11 +1,137 @@
-import { View, Text, StyleSheet } from 'react-native'
+import { useState, useEffect } from 'react'
+import {
+  View, Text, ScrollView, Image,
+  TouchableOpacity, ActivityIndicator, StyleSheet
+} from 'react-native'
 import { colors } from '../constants/colors'
 import { typography } from '../constants/typography'
+import { fetchTimeline } from '../services/wardrobeService'
 
 export default function TimelineScreen() {
+  const [logs, setLogs] = useState([])
+  const [isLoading, setIsLoading] = useState(true)
+  const [activeMonth, setActiveMonth] = useState('March')
+
+  useEffect(() => {
+    loadTimeline()
+  }, [])
+
+  const loadTimeline = async () => {
+    try {
+      const data = await fetchTimeline()
+      setLogs(data)
+    } catch (error) {
+      console.error('Timeline error:', error)
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const formatDate = (dateString) => {
+    const date = new Date(dateString)
+    return date.toLocaleDateString('en-GB', {
+      weekday: 'long',
+      day: 'numeric',
+      month: 'short',
+    })
+  }
+
+  const formatShortDate = (dateString) => {
+    const date = new Date(dateString)
+    return date.toLocaleDateString('en-GB', {
+      day: 'numeric',
+      month: 'short',
+    })
+  }
+
+  const getItems = (log) => {
+    return log.log_items?.map(li => li.items).filter(Boolean) || []
+  }
+
+  const ItemTag = ({ name }) => (
+    <View style={styles.tag}>
+      <Text style={styles.tagText}>{name.toUpperCase()}</Text>
+    </View>
+  )
+
+  if (isLoading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator color={colors.ivory} />
+      </View>
+    )
+  }
+
+  if (logs.length === 0) {
+    return (
+      <View style={styles.emptyContainer}>
+        <Text style={styles.emptyTitle}>No fits logged yet</Text>
+        <Text style={styles.emptySubtitle}>Head to the camera tab to log your first outfit</Text>
+      </View>
+    )
+  }
+
+  const hero = logs[0]
+  const rest = logs.slice(1)
+  const heroItems = getItems(hero)
+
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Timeline</Text>
+
+      {/* Header */}
+      <View style={styles.header}>
+        <Text style={styles.headerTitle}>Fits</Text>
+        <TouchableOpacity>
+          <Text style={styles.monthFilter}>{activeMonth} ↓</Text>
+        </TouchableOpacity>
+      </View>
+
+      <ScrollView
+        style={styles.scroll}
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}
+      >
+
+        {/* Hero card */}
+        <TouchableOpacity style={styles.heroCard} activeOpacity={0.9}>
+          <Image source={{ uri: hero.photo_url }} style={styles.heroImage} />
+          <View style={styles.heroOverlay} />
+          <View style={styles.heroContent}>
+            <Text style={styles.heroDate}>{formatDate(hero.logged_at)}</Text>
+            <View style={styles.tagRow}>
+              {heroItems.slice(0, 3).map((item, i) => (
+                <ItemTag key={i} name={item.name} />
+              ))}
+            </View>
+          </View>
+        </TouchableOpacity>
+
+        {/* Grid of smaller cards */}
+        <View style={styles.grid}>
+          {rest.map((log, index) => {
+            const items = getItems(log)
+            return (
+              <TouchableOpacity
+                key={log.id}
+                style={styles.gridCard}
+                activeOpacity={0.9}
+              >
+                <Image source={{ uri: log.photo_url }} style={styles.gridImage} />
+                <View style={styles.gridOverlay} />
+                <View style={styles.gridContent}>
+                  <Text style={styles.gridDate}>{formatShortDate(log.logged_at)}</Text>
+                  <View style={styles.tagRow}>
+                    {items.slice(0, 2).map((item, i) => (
+                      <ItemTag key={i} name={item.name} />
+                    ))}
+                  </View>
+                </View>
+              </TouchableOpacity>
+            )
+          })}
+        </View>
+
+      </ScrollView>
     </View>
   )
 }
@@ -14,12 +140,143 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.oliveGreen,
+  },
+  loadingContainer: {
+    flex: 1,
+    backgroundColor: colors.oliveGreen,
     justifyContent: 'center',
     alignItems: 'center',
   },
-  title: {
+  emptyContainer: {
+    flex: 1,
+    backgroundColor: colors.oliveGreen,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 40,
+  },
+  emptyTitle: {
     color: colors.ivory,
     fontSize: typography.sizes.xl,
     fontFamily: typography.fonts.cormorantItalic,
+    marginBottom: 8,
+    textAlign: 'center',
+  },
+  emptySubtitle: {
+    color: '#666',
+    fontSize: typography.sizes.sm,
+    textAlign: 'center',
+  },
+  header: {
+    paddingTop: 60,
+    paddingHorizontal: 16,
+    paddingBottom: 12,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-end',
+  },
+  headerTitle: {
+    color: colors.ivory,
+    fontSize: typography.sizes.xxl,
+    fontFamily: typography.fonts.cormorantItalic,
+    letterSpacing: -0.5,
+  },
+  monthFilter: {
+    color: colors.steelBlue,
+    fontSize: typography.sizes.sm,
+    letterSpacing: 1,
+  },
+  scroll: {
+    flex: 1,
+  },
+  scrollContent: {
+    paddingHorizontal: 12,
+    paddingBottom: 20,
+    gap: 4,
+  },
+  heroCard: {
+    height: 320,
+    borderRadius: 16,
+    overflow: 'hidden',
+    marginBottom: 4,
+  },
+  heroImage: {
+    width: '100%',
+    height: '100%',
+    resizeMode: 'cover',
+  },
+  heroOverlay: {
+    position: 'absolute',
+    inset: 0,
+    bottom: 0,
+    left: 0,
+    right: 0,
+    top: 0,
+    backgroundColor: 'rgba(0,0,0,0.25)',
+  },
+  heroContent: {
+    position: 'absolute',
+    bottom: 16,
+    left: 16,
+    right: 16,
+  },
+  heroDate: {
+    color: colors.ivory,
+    fontSize: typography.sizes.lg,
+    fontFamily: typography.fonts.cormorantItalic,
+    marginBottom: 8,
+  },
+  tagRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 4,
+  },
+  tag: {
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 4,
+    borderWidth: 0.5,
+    borderColor: 'rgba(255, 255, 255, 0.2)',
+  },
+  tagText: {
+    color: colors.ivory,
+    fontSize: 8,
+    letterSpacing: 1,
+  },
+  grid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 4,
+  },
+  gridCard: {
+    width: '49.5%',
+    height: 200,
+    borderRadius: 12,
+    overflow: 'hidden',
+  },
+  gridImage: {
+    width: '100%',
+    height: '100%',
+    resizeMode: 'cover',
+  },
+  gridOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+  },
+  gridContent: {
+    position: 'absolute',
+    bottom: 10,
+    left: 10,
+    right: 10,
+  },
+  gridDate: {
+    color: colors.ivory,
+    fontSize: typography.sizes.sm,
+    fontFamily: typography.fonts.cormorantItalic,
+    marginBottom: 4,
+    opacity: 0.9,
   },
 })
