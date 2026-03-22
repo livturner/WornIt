@@ -9,6 +9,7 @@ import CameraScreen from './src/screens/CameraScreen'
 import TimelineScreen from './src/screens/TimelineScreen'
 import WardrobeScreen from './src/screens/WardrobeScreen'
 import AuthScreen from './src/screens/AuthScreen'
+import ProfileScreen from './src/screens/ProfileScreen'
 import { colors } from './src/constants/colors'
 import { typography } from './src/constants/typography'
 
@@ -72,6 +73,8 @@ export default function App() {
               iconName = focused ? 'camera' : 'camera-outline'
             } else if (route.name === 'Wardrobe') {
               iconName = focused ? 'shirt' : 'shirt-outline'
+            } else if (route.name === 'Profile') {
+              iconName = focused ? 'person' : 'person-outline'
             }
 
             const iconSize = route.name === 'Camera' ? size + 4 : size
@@ -87,6 +90,7 @@ export default function App() {
         <Tab.Screen name="Timeline" component={TimelineScreen} />
         <Tab.Screen name="Camera" component={CameraScreen} />
         <Tab.Screen name="Wardrobe" component={WardrobeScreen} />
+        <Tab.Screen name="Profile" component={ProfileScreen} />
       </Tab.Navigator>
     </NavigationContainer>
   )

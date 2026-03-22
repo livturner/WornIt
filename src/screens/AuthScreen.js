@@ -2,7 +2,7 @@ import { useState } from 'react'
 import {
   StyleSheet, Text, View, TextInput,
   ActivityIndicator, KeyboardAvoidingView,
-  TouchableWithoutFeedback, Keyboard, Platform, Pressable
+  Platform, Pressable, ScrollView
 } from 'react-native'
 import { colors } from '../constants/colors'
 import { typography } from '../constants/typography'
@@ -18,7 +18,6 @@ export default function AuthScreen() {
   const handleAuth = async () => {
     setIsLoading(true)
     setError(null)
-    Keyboard.dismiss()
     try {
       if (isSignUp) {
         const { error } = await supabase.auth.signUp({ email, password })
@@ -38,10 +37,12 @@ export default function AuthScreen() {
     <KeyboardAvoidingView
       style={styles.container}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      keyboardVerticalOffset={0}
     >
-      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-        <View style={styles.inner}>
-
+      <ScrollView
+        contentContainerStyle= {styles.inner}
+        keyboardShouldPersistTaps="handled"
+      >
           {/* Logo */}
           <View style={styles.header}>
             <Text style={styles.appName}>
@@ -109,8 +110,7 @@ export default function AuthScreen() {
             </Pressable>
           </View>
 
-        </View>
-      </TouchableWithoutFeedback>
+        </ScrollView>
     </KeyboardAvoidingView>
   )
 }
