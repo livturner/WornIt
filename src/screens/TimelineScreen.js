@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import {
   View, Text, ScrollView, Image,
-  TouchableOpacity, ActivityIndicator, StyleSheet
+  TouchableOpacity, ActivityIndicator, StyleSheet, RefreshControl
 } from 'react-native'
 import { useFocusEffect } from '@react-navigation/native'
 import { colors } from '../constants/colors'
@@ -11,6 +11,7 @@ import { fetchTimeline } from '../services/wardrobeService'
 export default function TimelineScreen({navigation}) {
   const [logs, setLogs] = useState([])
   const [isLoading, setIsLoading] = useState(true)
+  const [refreshing, setRefreshing] = useState(false)
   const [activeMonth, setActiveMonth] = useState('March')
 
   useFocusEffect(
@@ -27,6 +28,18 @@ export default function TimelineScreen({navigation}) {
       console.error('Timeline error:', error)
     } finally {
       setIsLoading(false)
+    }
+  }
+
+  const onRefresh = async () => {
+    setRefreshing(true)
+    try {
+      const data = await fetchTimeline()
+      setLogs(data)
+    } catch (error) {
+      console.error('Timeline error:', error)
+    } finally {
+      setRefreshing(false)
     }
   }
 
@@ -93,6 +106,7 @@ export default function TimelineScreen({navigation}) {
         style={styles.scroll}
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.ivory} />}
       >
 
         {/* Hero card */}

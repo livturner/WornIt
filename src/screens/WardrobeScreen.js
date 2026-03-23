@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import {
   View, Text, ScrollView, Image,
-  TouchableOpacity, ActivityIndicator, StyleSheet
+  TouchableOpacity, ActivityIndicator, StyleSheet, RefreshControl
 } from 'react-native'
 import {useFocusEffect} from '@react-navigation/native'
 import { colors } from '../constants/colors'
@@ -13,6 +13,7 @@ const CATEGORIES = ['All', 'Tops', 'Bottoms', 'Shoes', 'Accessories', 'Outerwear
 export default function WardrobeScreen({ navigation }) {
   const [items, setItems] = useState([])
   const [isLoading, setIsLoading] = useState(true)
+  const [refreshing, setRefreshing] = useState(false)
   const [activeCategory, setActiveCategory] = useState('All')
 
   useFocusEffect(
@@ -29,6 +30,18 @@ export default function WardrobeScreen({ navigation }) {
       console.error('Wardrobe error:', error)
     } finally {
       setIsLoading(false)
+    }
+  }
+
+  const onRefresh = async () => {
+    setRefreshing(true)
+    try {
+      const data = await fetchWardrobe()
+      setItems(data)
+    } catch (error) {
+      console.error('Wardrobe error:', error)
+    } finally {
+      setRefreshing(false)
     }
   }
 
@@ -122,6 +135,7 @@ export default function WardrobeScreen({ navigation }) {
         style={styles.scroll}
         contentContainerStyle={styles.grid}
         showsVerticalScrollIndicator={false}
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.ivory} />}
       >
         {filteredItems.map((item, index) => {
           const photoUrl = getPhotoUrl(item)
