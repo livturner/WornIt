@@ -210,8 +210,8 @@ const styles = StyleSheet.create({
   },
   wearCount: {
     color: colors.ivory,
-    fontSize: typography.sizes.xxl,
-    fontFamily: typography.fonts.cormorantBold,
+    fontSize: typography.sizes.lg,
+    fontWeight: typography.weights.bold,
   },
   section: {
     marginBottom: 24,
