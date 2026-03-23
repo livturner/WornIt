@@ -407,7 +407,7 @@ const styles = StyleSheet.create({
     height: 36,
     borderRadius: 18,
     borderWidth: 1,
-    borderColor: 'transparent',
+    borderColor: 'rgba(255,255,255,0.15)',
   },
   colorSwatchSelected: {
     borderColor: colors.ivory,
