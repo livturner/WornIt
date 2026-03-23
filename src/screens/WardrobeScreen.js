@@ -1,8 +1,9 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import {
   View, Text, ScrollView, Image,
   TouchableOpacity, ActivityIndicator, StyleSheet
 } from 'react-native'
+import {useFocusEffect} from '@react-navigation/native'
 import { colors } from '../constants/colors'
 import { typography } from '../constants/typography'
 import { fetchWardrobe } from '../services/wardrobeService'
@@ -14,9 +15,11 @@ export default function WardrobeScreen() {
   const [isLoading, setIsLoading] = useState(true)
   const [activeCategory, setActiveCategory] = useState('All')
 
-  useEffect(() => {
-    loadWardrobe()
-  }, [])
+  useFocusEffect(
+    useCallback(() => {
+      loadWardrobe()
+    }, [])
+  )
 
   const loadWardrobe = async () => {
     try {
