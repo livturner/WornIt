@@ -209,7 +209,7 @@ const styles = StyleSheet.create({
     letterSpacing: 0.5,
   },
   wearCount: {
-    color: colors.ivory,
+    color: colors.steelBlue,
     fontSize: typography.sizes.md,
     fontWeight: typography.weights.bold,
   },

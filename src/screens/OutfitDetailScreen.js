@@ -219,7 +219,7 @@ const styles = StyleSheet.create({
     textTransform: 'capitalize',
   },
   wearCount: {
-    color: colors.ivory,
+    color: colors.steelBlue,
     fontSize: typography.sizes.sm,
     fontWeight: typography.weights.bold,
   },

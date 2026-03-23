@@ -8,7 +8,7 @@ import { colors } from '../constants/colors'
 import { typography } from '../constants/typography'
 import { fetchWardrobe } from '../services/wardrobeService'
 
-const CATEGORIES = ['All', 'Tops', 'Bottoms', 'Shoes', 'Accessories', 'Outerwear']
+const CATEGORIES = ['All', 'Tops', 'Bottoms', 'Dresses', 'Shoes', 'Accessories', 'Outerwear']
 
 export default function WardrobeScreen({ navigation }) {
   const [items, setItems] = useState([])
@@ -137,7 +137,11 @@ export default function WardrobeScreen({ navigation }) {
         showsVerticalScrollIndicator={false}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.ivory} />}
       >
-        {filteredItems.map((item, index) => {
+        {filteredItems.length === 0 ? (
+          <View style={styles.emptyCategory}>
+            <Text style={styles.emptyCategoryText}>No {activeCategory.toLowerCase()} logged yet</Text>
+          </View>
+        ) : filteredItems.map((item, index) => {
           const photoUrl = getPhotoUrl(item)
           const unworn = isUnworn(item)
 
@@ -362,4 +366,14 @@ const styles = StyleSheet.create({
     fontSize: 10,
     letterSpacing: 0.3,
   },
+  emptyCategory: {
+  flex: 1,
+  alignItems: 'center',
+  paddingTop: 60,
+},
+emptyCategoryText: {
+  color: '#666',
+  fontSize: typography.sizes.md,
+  fontFamily: typography.fonts.cormorantItalic,
+},
 })
