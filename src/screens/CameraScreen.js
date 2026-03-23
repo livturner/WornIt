@@ -16,6 +16,8 @@ export default function CameraScreen({navigation}) {
   const [items, setItems] = useState([])
   const [isSaving, setIsSaving] = useState(false)
   const cameraRef = useRef(null)
+  const [countdown, setCountdown] = useState(null)
+  const [timerEnabled, setTimerEnabled] = useState(false)
 
   useEffect(() => {
   if (photo) {
@@ -36,14 +38,28 @@ const analysePhoto = async () => {
   }
 }
 
-  const takePhoto = async () => {
-    if (cameraRef.current) {
-      setIsLoading(true)
-      const result = await cameraRef.current.takePictureAsync()
-      setPhoto(result.uri)
-      console.log('Photo taken:', result.uri)
-    }
+const startCountdown = () => {
+  setCountdown(3)
+  const interval = setInterval(() => {
+    setCountdown(prev => {
+      if (prev === 1) {
+        clearInterval(interval)
+        capturePhoto()
+        return null
+      }
+      return prev - 1
+    })
+  }, 1000)
+}
+
+const capturePhoto = async () => {
+  if (cameraRef.current) {
+    setIsLoading(true)
+    const result = await cameraRef.current.takePictureAsync()
+    setPhoto(result.uri)
+    console.log('Photo taken:', result.uri)
   }
+}
 
   // Permission still loading
   if (!permission) {
@@ -113,14 +129,30 @@ const analysePhoto = async () => {
           <ActivityIndicator size="large" color={colors.ivory} style={styles.loader} />
         ) : (
           <>
-            <View style={styles.sideControl} />
-            <TouchableOpacity
-              style={styles.shutterButton}
-              onPress={takePhoto}
-              disabled={isLoading}
-            >
-              <View style={styles.shutterInner} />
-            </TouchableOpacity>
+            <View style={styles.sideControl}>
+              <TouchableOpacity
+                onPress={() => setTimerEnabled(!timerEnabled)}
+                style={styles.flipButton}
+              >
+                <Ionicons
+                  name="timer-outline"
+                  size={24}
+                  color={timerEnabled ? colors.steelBlue : colors.ivory}
+                />
+              </TouchableOpacity>
+            </View>
+            <View style={styles.shutterContainer}>
+              {countdown !== null && (
+                <Text style={styles.countdownText}>{countdown}</Text>
+              )}
+              <TouchableOpacity
+                style={styles.shutterButton}
+                onPress={timerEnabled ? startCountdown : capturePhoto}
+                disabled={isLoading || countdown !== null}
+              >
+                <View style={styles.shutterInner} />
+              </TouchableOpacity>
+            </View>
             <View style={styles.sideControl}>
               <TouchableOpacity
                 onPress={() => setFacing(facing === 'front' ? 'back' : 'front')}
@@ -219,4 +251,14 @@ const styles = StyleSheet.create({
     fontSize: typography.sizes.md,
     fontWeight: typography.weights.bold,
   },
+  shutterContainer: {
+  alignItems: 'center',
+  gap: 8,
+},
+countdownText: {
+  color: colors.ivory,
+  fontSize: typography.sizes.xxl,
+  fontFamily: typography.fonts.cormorantItalic,
+  lineHeight: typography.sizes.xxl,
+},
 })
