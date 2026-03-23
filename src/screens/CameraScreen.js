@@ -122,6 +122,12 @@ const capturePhoto = async () => {
         ) : (
           <CameraView style={styles.camera} facing={facing} ref={cameraRef} />
         )}
+        {photo && isLoading && (
+          <View style={styles.analysingOverlay}>
+            <ActivityIndicator size="large" color={colors.ivory} />
+            <Text style={styles.analysingText}>Identifying your outfit...</Text>
+          </View>
+        )}
       </View>
 
       <View style={styles.controlsBar}>
@@ -250,6 +256,20 @@ const styles = StyleSheet.create({
     color: colors.ivory,
     fontSize: typography.sizes.md,
     fontWeight: typography.weights.bold,
+  },
+  analysingOverlay: {
+    position: 'absolute',
+    inset: 0,
+    backgroundColor: 'rgba(0,0,0,0.55)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: 16,
+  },
+  analysingText: {
+    color: colors.ivory,
+    fontSize: typography.sizes.md,
+    fontFamily: typography.fonts.cormorantItalic,
+    letterSpacing: 1,
   },
   shutterContainer: {
   alignItems: 'center',
