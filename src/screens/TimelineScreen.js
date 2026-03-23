@@ -6,13 +6,14 @@ import {
 import { useFocusEffect } from '@react-navigation/native'
 import { colors } from '../constants/colors'
 import { typography } from '../constants/typography'
-import { fetchTimeline } from '../services/wardrobeService'
+import { fetchTimeline, fetchStreak } from '../services/wardrobeService'
 
 export default function TimelineScreen({navigation}) {
   const [logs, setLogs] = useState([])
   const [isLoading, setIsLoading] = useState(true)
   const [refreshing, setRefreshing] = useState(false)
   const [activeMonth, setActiveMonth] = useState('March')
+  const [streak, setStreak] = useState(0)
 
   useFocusEffect(
     useCallback(() => {
@@ -23,7 +24,9 @@ export default function TimelineScreen({navigation}) {
   const loadTimeline = async () => {
     try {
       const data = await fetchTimeline()
+      const streakCount = await fetchStreak()
       setLogs(data)
+      setStreak(streakCount)
     } catch (error) {
       console.error('Timeline error:', error)
     } finally {
@@ -97,9 +100,14 @@ export default function TimelineScreen({navigation}) {
       {/* Header */}
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Fits</Text>
-        <TouchableOpacity>
-          <Text style={styles.monthFilter}>{activeMonth} ↓</Text>
-        </TouchableOpacity>
+        <View style={styles.headerRight}>
+          {streak > 0 && (
+            <Text style={styles.streakInline}>🔥 {streak}</Text>
+          )}
+          <TouchableOpacity>
+            <Text style={styles.monthFilter}>{activeMonth} ↓</Text>
+          </TouchableOpacity>
+        </View>
       </View>
 
       <ScrollView
@@ -296,5 +304,14 @@ const styles = StyleSheet.create({
     fontFamily: typography.fonts.cormorantItalic,
     marginBottom: 4,
     opacity: 0.9,
+  },
+  headerRight: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
+  streakInline: {
+    color: colors.ivory,
+    fontSize: typography.sizes.sm,
   },
 })

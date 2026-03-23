@@ -210,3 +210,40 @@ export async function deleteItem(itemId) {
 
   if (error) throw error
 }
+
+export async function fetchStreak() {
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return 0
+
+  const { data, error } = await supabase
+    .from('logs')
+    .select('logged_at')
+    .eq('user_id', user.id)
+    .order('logged_at', { ascending: false })
+
+  if (error || !data.length) return 0
+
+  // Get unique days
+  const days = [...new Set(data.map(log => 
+    new Date(log.logged_at).toISOString().split('T')[0]
+  ))]
+
+  // Count consecutive days from today
+  let streak = 0
+  const today = new Date().toISOString().split('T')[0]
+  const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0]
+
+  // Streak is still alive if logged today or yesterday
+  if (days[0] !== today && days[0] !== yesterday) return 0
+
+  for (let i = 0; i < days.length; i++) {
+    const expected = new Date(Date.now() - i * 86400000).toISOString().split('T')[0]
+    if (days[i] === expected) {
+      streak++
+    } else {
+      break
+    }
+  }
+
+  return streak
+}
