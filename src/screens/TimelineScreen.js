@@ -8,7 +8,7 @@ import { colors } from '../constants/colors'
 import { typography } from '../constants/typography'
 import { fetchTimeline } from '../services/wardrobeService'
 
-export default function TimelineScreen() {
+export default function TimelineScreen({navigation}) {
   const [logs, setLogs] = useState([])
   const [isLoading, setIsLoading] = useState(true)
   const [activeMonth, setActiveMonth] = useState('March')
@@ -96,7 +96,7 @@ export default function TimelineScreen() {
       >
 
         {/* Hero card */}
-        <TouchableOpacity style={styles.heroCard} activeOpacity={0.9}>
+        <TouchableOpacity style={styles.heroCard} activeOpacity={0.9} onPress={() => navigation.navigate('OutfitDetail', {logId: hero.id })}>
           <Image source={{ uri: hero.photo_url }} style={styles.heroImage} />
           <View style={styles.heroOverlay} />
           <View style={styles.heroContent}>
@@ -118,6 +118,7 @@ export default function TimelineScreen() {
                 key={log.id}
                 style={styles.gridCard}
                 activeOpacity={0.9}
+                onPress={() => navigation.navigate('OutfitDetail', { logId: log.id })}
               >
                 <Image source={{ uri: log.photo_url }} style={styles.gridImage} />
                 <View style={styles.gridOverlay} />

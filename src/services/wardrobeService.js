@@ -143,3 +143,36 @@ export async function fetchWardrobe() {
   if (error) throw error
   return data
 }
+
+export async function fetchLogById(logId) {
+  const { data, error } = await supabase
+    .from('logs')
+    .select(`
+      id,
+      photo_url,
+      logged_at,
+      log_items (
+        items (
+          id,
+          name,
+          category,
+          color,
+          wear_count
+        )
+      )
+    `)
+    .eq('id', logId)
+    .single()
+
+  if (error) throw error
+  return data
+}
+
+export async function deleteLog(logId) {
+  const { error } = await supabase
+    .from('logs')
+    .delete()
+    .eq('id', logId)
+
+  if (error) throw error
+}

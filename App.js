@@ -2,18 +2,40 @@ import { useState, useEffect } from 'react'
 import { View, Text } from 'react-native'
 import { NavigationContainer } from '@react-navigation/native'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
+import { createNativeStackNavigator } from '@react-navigation/native-stack'
 import { useFonts, CormorantGaramond_400Regular_Italic, CormorantGaramond_700Bold } from '@expo-google-fonts/cormorant-garamond'
 import { Ionicons } from '@expo/vector-icons'
 import { supabase } from './src/services/supabase'
 import CameraScreen from './src/screens/CameraScreen'
 import TimelineScreen from './src/screens/TimelineScreen'
 import WardrobeScreen from './src/screens/WardrobeScreen'
+import OutfitDetailScreen from './src/screens/OutfitDetailScreen'
+import ItemDetailScreen from './src/screens/ItemDetailScreen'
 import AuthScreen from './src/screens/AuthScreen'
 import ProfileScreen from './src/screens/ProfileScreen'
 import { colors } from './src/constants/colors'
 import { typography } from './src/constants/typography'
 
 const Tab = createBottomTabNavigator()
+const Stack = createNativeStackNavigator()
+
+function TimelineStack() {
+  return (
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="TimelineIndex" component={TimelineScreen} />
+      <Stack.Screen name="OutfitDetail" component={OutfitDetailScreen} />
+    </Stack.Navigator>
+  )
+}
+
+function WardrobeStack() {
+  return (
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="WardrobeIndex" component={WardrobeScreen} />
+      <Stack.Screen name="ItemDetail" component={ItemDetailScreen} />
+    </Stack.Navigator>
+  )
+}
 
 export default function App() {
   const [fontsLoaded] = useFonts({
@@ -87,9 +109,9 @@ export default function App() {
           },
         })}
       >
-        <Tab.Screen name="Timeline" component={TimelineScreen} />
+        <Tab.Screen name="Timeline" component={TimelineStack} />
         <Tab.Screen name="Camera" component={CameraScreen} />
-        <Tab.Screen name="Wardrobe" component={WardrobeScreen} />
+        <Tab.Screen name="Wardrobe" component={WardrobeStack} />
         <Tab.Screen name="Profile" component={ProfileScreen} />
       </Tab.Navigator>
     </NavigationContainer>
