@@ -176,3 +176,37 @@ export async function deleteLog(logId) {
 
   if (error) throw error
 }
+
+export async function fetchItemById(itemId) {
+  const { data, error } = await supabase
+    .from('items')
+    .select(`
+      id,
+      name,
+      category,
+      color,
+      wear_count,
+      created_at,
+      log_items (
+        logs (
+          id,
+          photo_url,
+          logged_at
+        )
+      )
+    `)
+    .eq('id', itemId)
+    .single()
+
+  if (error) throw error
+  return data
+}
+
+export async function deleteItem(itemId) {
+  const { error } = await supabase
+    .from('items')
+    .delete()
+    .eq('id', itemId)
+
+  if (error) throw error
+}

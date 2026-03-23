@@ -10,7 +10,7 @@ import { fetchWardrobe } from '../services/wardrobeService'
 
 const CATEGORIES = ['All', 'Tops', 'Bottoms', 'Shoes', 'Accessories', 'Outerwear']
 
-export default function WardrobeScreen() {
+export default function WardrobeScreen({ navigation }) {
   const [items, setItems] = useState([])
   const [isLoading, setIsLoading] = useState(true)
   const [activeCategory, setActiveCategory] = useState('All')
@@ -135,6 +135,7 @@ export default function WardrobeScreen() {
                 index % 3 === 0 && styles.cardTall,
               ]}
               activeOpacity={0.9}
+              onPress={() => navigation.navigate('ItemDetail', { itemId: item.id })}
             >
               {photoUrl ? (
                 <Image source={{ uri: photoUrl }} style={styles.cardImage} />
