@@ -8,104 +8,74 @@ import {
   TextInput,
   StyleSheet,
   Pressable,
+  Modal,
 } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import { colors } from '../constants/colors'
+import { colorToHex } from '../utils/colorUtils'
 import { typography } from '../constants/typography'
+
+const COLORS = ['red', 'navy', 'blue', 'white', 'black', 'grey', 'brown', 'cream', 'beige', 'green', 'pink', 'yellow', 'orange', 'purple', 'burgundy', 'tan', 'camel', 'ivory', 'khaki', 'denim']
 
 export default function ConfirmationScreen({ photo, items: initialItems, onSave, onRetake }) {
   const [items, setItems] = useState(initialItems)
   const [editingId, setEditingId] = useState(null)
+  const [colorPickerIndex, setColorPickerIndex] = useState(null)
 
   const confirmedCount = items.filter(item => item.confirmed).length
   const hasConfirmed = confirmedCount > 0
 
-  // Toggle a single item confirmed/unconfirmed
   const toggleConfirm = (index) => {
     const updated = [...items]
     updated[index] = { ...updated[index], confirmed: !updated[index].confirmed }
     setItems(updated)
   }
 
-  // Confirm all items at once
   const confirmAll = () => {
     setItems(items.map(item => ({ ...item, confirmed: true })))
   }
 
-  // Rename an item
   const renameItem = (index, newName) => {
     const updated = [...items]
     updated[index] = { ...updated[index], name: newName }
     setItems(updated)
   }
 
-  // Delete an item
+  const recolorItem = (index, color) => {
+    const updated = [...items]
+    updated[index] = { ...updated[index], color: color }
+    setItems(updated)
+  }
+
   const deleteItem = (index) => {
     setItems(items.filter((_, i) => i !== index))
   }
 
-  // Add a missing item
   const addItem = () => {
     setItems([
       ...items,
-      {
-        name: '',
-        category: 'tops',
-        color: 'unknown',
-        confirmed: false,
-        isNew: true,
-      },
+      { name: '', category: 'tops', color: 'unknown', confirmed: false, isNew: true },
     ])
     setEditingId(items.length)
   }
 
-  const colorToHex = (colorName) => {
-    const colorsMap = {
-        red: '#E63946',
-        navy: '#1B2A4A',
-        blue: '#4682B4',
-        white: '#F8F8F8',
-        black: '#1A1A1A',
-        grey: '#9E9E9E',
-        gray: '#9E9E9E',
-        brown: '#8B5E3C',
-        cream: '#F5F0E8',
-        beige: '#E8DCC8',
-        green: '#4A7C59',
-        pink: '#E8A0B4',
-        yellow: '#F4D35E',
-        orange: '#F4845F',
-        purple: '#7B5EA7',
-        burgundy: '#6D1E2A',
-        tan: '#C9A96E',
-        camel: '#C19A6B',
-        ivory: '#FFFFF0',
-        khaki: '#BDB76B',
-        denim: '#5B7FA6',
+  const categoryColor = (category) => {
+    switch (category) {
+      case 'tops': return colors.steelBlue
+      case 'bottoms': return '#8B6914'
+      case 'outerwear': return '#5C7A5C'
+      case 'shoes': return '#8B6914'
+      case 'accessories': return '#7B5EA7'
+      case 'dresses': return '#C4627A'
+      default: return colors.oliveGreen
     }
-    const key = colorName.toLowerCase().split('/')[0].split(' ').pop()
-    return colorsMap[key] || '#888888'
-    }
-
-    const categoryColor = (category) => {
-        switch (category) {
-            case 'tops': return colors.steelBlue
-            case 'bottoms': return colors.wineRed
-            case 'outerwear': return '#5C7A5C'
-            case 'shoes': return '#8B6914'
-            case 'accessories': return '#7B5EA7'
-            case 'dresses': return '#C4627A'
-            default: return colors.oliveGreen
-        }
-    }
+  }
 
   return (
     <View style={styles.container}>
 
-      {/* Photo thumbnail */}
       <Image source={{ uri: photo }} style={styles.thumbnail} />
 
-      {/* Header */}
       <View style={styles.header}>
         {items.length === 0 ? (
           <>
@@ -120,40 +90,44 @@ export default function ConfirmationScreen({ photo, items: initialItems, onSave,
         )}
       </View>
 
-      {/* Confirm all button */}
       {items.length > 0 && confirmedCount < items.length && (
         <TouchableOpacity style={styles.confirmAllButton} onPress={confirmAll}>
           <Text style={styles.confirmAllText}>Confirm all</Text>
         </TouchableOpacity>
       )}
 
-      {/* Item list */}
       <ScrollView style={styles.list} contentContainerStyle={styles.listContent}>
         {items.map((item, index) => (
-          <View
-            key={index}
-            style={[styles.card, item.confirmed && styles.cardConfirmed]}
-          >
-            {/* Colour swatch */}
-            <View style={[styles.swatch, { backgroundColor: colorToHex(item.color) }]} />
+          <View key={index} style={[styles.card, item.confirmed && styles.cardConfirmed]}>
 
-            {/* Item details */}
+            {/* Colour swatch — tap to open color picker */}
+            <TouchableOpacity
+              onPress={() => setColorPickerIndex(index)}
+              style={[styles.swatch, { backgroundColor: colorToHex(item.color) }]}
+            />
+
             <View style={styles.cardContent}>
               {editingId === index ? (
-                <TextInput
-                  style={styles.nameInput}
-                  value={item.name}
-                  onChangeText={(text) => renameItem(index, text)}
-                  onBlur={() => setEditingId(null)}
-                  autoFocus
-                  placeholder="Item name"
-                  placeholderTextColor={colors.steelBlue}
-                />
+                <View style={styles.editRow}>
+                  <TextInput
+                    style={styles.nameInput}
+                    value={item.name}
+                    onChangeText={(text) => renameItem(index, text)}
+                    onBlur={() => setEditingId(null)}
+                    autoFocus
+                    placeholder="Item name"
+                    placeholderTextColor={colors.steelBlue}
+                  />
+                  <TouchableOpacity onPress={() => setEditingId(null)} style={styles.doneButton}>
+                    <Text style={styles.doneText}>Done</Text>
+                  </TouchableOpacity>
+                </View>
               ) : (
                 <TouchableOpacity onPress={() => setEditingId(index)}>
                   <Text style={styles.itemName}>{item.name || 'Unnamed item'}</Text>
                 </TouchableOpacity>
               )}
+
               <View style={[styles.categoryPill, { backgroundColor: categoryColor(item.category) }]}>
                 <Text style={styles.categoryText}>
                   {item.category.charAt(0).toUpperCase() + item.category.slice(1)}
@@ -161,7 +135,6 @@ export default function ConfirmationScreen({ photo, items: initialItems, onSave,
               </View>
             </View>
 
-            {/* Actions */}
             <View style={styles.cardActions}>
               <TouchableOpacity onPress={() => deleteItem(index)} style={styles.deleteButton}>
                 <Ionicons name="trash-outline" size={18} color={colors.ivory} />
@@ -177,22 +150,21 @@ export default function ConfirmationScreen({ photo, items: initialItems, onSave,
                 />
               </TouchableOpacity>
             </View>
+
           </View>
         ))}
 
-        {/* Add missing item row */}
         <TouchableOpacity style={styles.addRow} onPress={addItem}>
           <Ionicons name="add-circle-outline" size={20} color={colors.steelBlue} />
           <Text style={styles.addText}>Add a missing piece</Text>
         </TouchableOpacity>
       </ScrollView>
 
-      {/* Bottom CTAs */}
       <View style={styles.bottomBar}>
         <TouchableOpacity style={styles.retakeButton} onPress={onRetake}>
           <Text style={styles.retakeText}>Retake</Text>
         </TouchableOpacity>
-        < Pressable
+        <Pressable
           style={({ pressed }) => [
             styles.saveButton,
             !hasConfirmed && styles.saveButtonDisabled,
@@ -206,6 +178,39 @@ export default function ConfirmationScreen({ photo, items: initialItems, onSave,
           </Text>
         </Pressable>
       </View>
+
+      {/* Color picker modal */}
+      <Modal
+        visible={colorPickerIndex !== null}
+        transparent
+        animationType="slide"
+        onRequestClose={() => setColorPickerIndex(null)}
+      >
+        <TouchableOpacity
+          style={styles.modalBackdrop}
+          onPress={() => setColorPickerIndex(null)}
+          activeOpacity={1}
+        />
+        <View style={styles.colorSheet}>
+          <Text style={styles.colorSheetTitle}>Choose a colour</Text>
+          <View style={styles.colorGrid}>
+            {COLORS.map(color => (
+              <TouchableOpacity
+                key={color}
+                onPress={() => {
+                  recolorItem(colorPickerIndex, color)
+                  setColorPickerIndex(null)
+                }}
+                style={[
+                  styles.colorSheetSwatch,
+                  { backgroundColor: colorToHex(color) },
+                  colorPickerIndex !== null && items[colorPickerIndex]?.color === color && styles.colorSwatchSelected,
+                ]}
+              />
+            ))}
+          </View>
+        </View>
+      </Modal>
 
     </View>
   )
@@ -277,16 +282,31 @@ const styles = StyleSheet.create({
     flex: 1,
     gap: 6,
   },
-  itemName: {
-    color: colors.ivory,
-    fontSize: typography.sizes.md,
+  editRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
   },
   nameInput: {
+    flex: 1,
     color: colors.ivory,
     fontSize: typography.sizes.md,
     borderBottomWidth: 1,
     borderBottomColor: colors.steelBlue,
     paddingBottom: 2,
+  },
+  doneButton: {
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+  },
+  doneText: {
+    color: colors.steelBlue,
+    fontSize: typography.sizes.sm,
+    fontWeight: typography.weights.bold,
+  },
+  itemName: {
+    color: colors.ivory,
+    fontSize: typography.sizes.md,
   },
   categoryPill: {
     alignSelf: 'flex-start',
@@ -357,5 +377,40 @@ const styles = StyleSheet.create({
     color: colors.ivory,
     fontSize: typography.sizes.md,
     fontWeight: typography.weights.bold,
+  },
+  modalBackdrop: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+  },
+  colorSheet: {
+    backgroundColor: '#1E2318',
+    padding: 24,
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+  },
+  colorSheetTitle: {
+    color: colors.ivory,
+    fontSize: typography.sizes.md,
+    fontFamily: typography.fonts.cormorantItalic,
+    marginBottom: 16,
+    textAlign: 'center',
+  },
+  colorGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 12,
+    justifyContent: 'center',
+    paddingBottom: 20,
+  },
+  colorSheetSwatch: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    borderWidth: 1,
+    borderColor: 'transparent',
+  },
+  colorSwatchSelected: {
+    borderColor: colors.ivory,
+    borderWidth: 2,
   },
 })
