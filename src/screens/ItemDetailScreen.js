@@ -24,6 +24,7 @@ export default function ItemDetailScreen({ route, navigation }) {
       setItem(data)
     } catch (error) {
       console.error('Error fetching item:', error)
+      Alert.alert('Something went wrong', 'Failed to load this item.', [{ text: 'OK', onPress: () => navigation.goBack() }])
     } finally {
       setIsLoading(false)
     }
@@ -44,6 +45,7 @@ export default function ItemDetailScreen({ route, navigation }) {
               navigation.goBack()
             } catch (error) {
               console.error('Error deleting item:', error)
+              Alert.alert('Delete failed', 'Something went wrong removing this item. Please try again.')
             }
           }
         }

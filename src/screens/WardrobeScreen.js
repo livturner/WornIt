@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import {
   View, Text, ScrollView, Image,
-  TouchableOpacity, ActivityIndicator, StyleSheet, RefreshControl
+  TouchableOpacity, ActivityIndicator, StyleSheet, RefreshControl, Alert
 } from 'react-native'
 import {useFocusEffect} from '@react-navigation/native'
 import { colors } from '../constants/colors'
@@ -28,6 +28,7 @@ export default function WardrobeScreen({ navigation }) {
       setItems(data)
     } catch (error) {
       console.error('Wardrobe error:', error)
+      Alert.alert('Something went wrong', 'Failed to load your wardrobe. Please try again.')
     } finally {
       setIsLoading(false)
     }
@@ -40,6 +41,7 @@ export default function WardrobeScreen({ navigation }) {
       setItems(data)
     } catch (error) {
       console.error('Wardrobe error:', error)
+      Alert.alert('Something went wrong', 'Failed to refresh your wardrobe. Please try again.')
     } finally {
       setRefreshing(false)
     }

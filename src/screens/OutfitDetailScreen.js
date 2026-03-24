@@ -24,6 +24,7 @@ export default function OutfitDetailScreen({ route, navigation }) {
       setLog(data)
     } catch (error) {
       console.error('Error fetching log:', error)
+      Alert.alert('Something went wrong', 'Failed to load this outfit.', [{ text: 'OK', onPress: () => navigation.goBack() }])
     } finally {
       setIsLoading(false)
     }
@@ -44,6 +45,7 @@ export default function OutfitDetailScreen({ route, navigation }) {
               navigation.goBack()
             } catch (error) {
               console.error('Error deleting log:', error)
+              Alert.alert('Delete failed', 'Something went wrong removing this outfit. Please try again.')
             }
           }
         }

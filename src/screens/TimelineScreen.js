@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import {
   View, Text, ScrollView, Image,
-  TouchableOpacity, ActivityIndicator, StyleSheet, RefreshControl
+  TouchableOpacity, ActivityIndicator, StyleSheet, RefreshControl, Alert
 } from 'react-native'
 import { useFocusEffect } from '@react-navigation/native'
 import { colors } from '../constants/colors'
@@ -29,6 +29,7 @@ export default function TimelineScreen({navigation}) {
       setStreak(streakCount)
     } catch (error) {
       console.error('Timeline error:', error)
+      Alert.alert('Something went wrong', 'Failed to load your timeline. Please try again.')
     } finally {
       setIsLoading(false)
     }
@@ -41,6 +42,7 @@ export default function TimelineScreen({navigation}) {
       setLogs(data)
     } catch (error) {
       console.error('Timeline error:', error)
+      Alert.alert('Something went wrong', 'Failed to refresh your timeline. Please try again.')
     } finally {
       setRefreshing(false)
     }

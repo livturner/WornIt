@@ -1,5 +1,5 @@
 import { useRef, useState, useEffect } from 'react'
-import { StyleSheet, Text, View, TouchableOpacity, ActivityIndicator, Image } from 'react-native'
+import { StyleSheet, Text, View, TouchableOpacity, ActivityIndicator, Image, Alert } from 'react-native'
 import { CameraView, useCameraPermissions } from 'expo-camera'
 import { colors } from '../constants/colors'
 import { typography } from '../constants/typography'
@@ -35,6 +35,8 @@ const analysePhoto = async () => {
     console.log('Items identified:', identified)
   } catch (error) {
     console.error('GPT Vision error:', error)
+    Alert.alert('Analysis failed', 'Something went wrong identifying your outfit. Please try again.')
+    setPhoto(null)
   } finally {
     setIsLoading(false)
   }
@@ -105,6 +107,7 @@ const capturePhoto = async () => {
           navigation.navigate('Timeline')
         } catch (error) {
           console.error('Error saving outfit log:', error)
+          Alert.alert('Save failed', 'Something went wrong saving your outfit. Please try again.')
         } finally {
           setIsSaving(false)
         }
