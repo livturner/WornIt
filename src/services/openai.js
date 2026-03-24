@@ -1,8 +1,19 @@
+import * as ImageManipulator from 'expo-image-manipulator'
+
 const apiKey = process.env.EXPO_PUBLIC_OPENAI_KEY
 
 export async function identifyOutfit(photoUri) {
-  // Convert the photo to base64
-  const response = await fetch(photoUri)
+  const manipulated = await ImageManipulator.ImageManipulator
+  .manipulate(photoUri)
+  .resize({ width: 1024 })
+  .renderAsync()
+
+  const compressedUri = (await manipulated.saveAsync({
+  compress: 0.8,
+  format: ImageManipulator.SaveFormat.JPEG,
+})).uri
+
+  const response = await fetch(compressedUri)
   const blob = await response.blob()
   const base64 = await new Promise((resolve, reject) => {
     const reader = new FileReader()

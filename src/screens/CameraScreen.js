@@ -123,20 +123,21 @@ const capturePhoto = async () => {
         {photo ? (
           <Image source={{ uri: photo }} style={styles.camera} />
         ) : (
-          <CameraView style={styles.camera} facing={facing} ref={cameraRef} flash={flash}>
-            <View style={styles.viewfinderControls}>
-              <TouchableOpacity
-                onPress={() => setFlash(flash === 'off' ? 'on' : 'off')}
-                style={styles.flashButton}
-              >
-                <Ionicons
-                  name={flash === 'off' ? 'flash-off-outline' : 'flash-outline'}
-                  size={22}
-                  color={flash === 'on' ? '#FFD60A' : colors.ivory}
-                />
-              </TouchableOpacity>
-            </View>
-          </CameraView>
+          <CameraView style={styles.camera} facing={facing} ref={cameraRef} flash={flash} />
+        )}
+        {!photo && (
+          <View style={styles.viewfinderControls}>
+            <TouchableOpacity
+              onPress={() => setFlash(flash === 'off' ? 'on' : 'off')}
+              style={styles.flashButton}
+            >
+              <Ionicons
+                name={flash === 'off' ? 'flash-off-outline' : 'flash-outline'}
+                size={22}
+                color={flash === 'on' ? '#FFD60A' : colors.ivory}
+              />
+            </TouchableOpacity>
+          </View>
         )}
         {photo && isLoading && (
           <View style={styles.analysingOverlay}>
