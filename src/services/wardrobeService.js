@@ -56,7 +56,7 @@ async function saveOrUpdateItem(item, userId) {
     .from('items')
     .select()
     .eq('user_id', userId)
-    .ilike('name', item.name)
+    .or(`name.ilike.${item.name},original_name.ilike.${item.name}`)
     .single()
 
   if (existing) {
@@ -77,6 +77,7 @@ async function saveOrUpdateItem(item, userId) {
       .insert({
         user_id: userId,
         name: item.name,
+        original_name: item.name,
         category: item.category,
         color: item.color,
         wear_count: 1,
