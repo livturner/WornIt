@@ -21,6 +21,7 @@ export default function ConfirmationScreen({ photo, items: initialItems, onSave,
   const [items, setItems] = useState(initialItems)
   const [editingId, setEditingId] = useState(null)
   const [colorPickerIndex, setColorPickerIndex] = useState(null)
+  const [isSaving, setIsSaving] = useState(false)
 
   const confirmedCount = items.filter(item => item.confirmed).length
   const hasConfirmed = confirmedCount > 0
@@ -167,11 +168,15 @@ export default function ConfirmationScreen({ photo, items: initialItems, onSave,
         <Pressable
           style={({ pressed }) => [
             styles.saveButton,
-            !hasConfirmed && styles.saveButtonDisabled,
-            pressed && hasConfirmed && { opacity: 0.8, transform: [{ scale: 0.98 }] },
+            (!hasConfirmed || isSaving) && styles.saveButtonDisabled,
+            pressed && hasConfirmed && !isSaving && { opacity: 0.8, transform: [{ scale: 0.98 }] },
           ]}
-          onPress={() => hasConfirmed && onSave(items.filter(i => i.confirmed))}
-          disabled={!hasConfirmed}
+          onPress={async () => {
+            if (hasConfirmed && !isSaving) return
+              setIsSaving(true)
+              await onSave(items.filter(i => i.confirmed))
+            }}
+          disabled={!hasConfirmed || isSaving}
         >
           <Text style={styles.saveButtonText}>
             Save to wardrobe{hasConfirmed ? ` (${confirmedCount})` : ''}

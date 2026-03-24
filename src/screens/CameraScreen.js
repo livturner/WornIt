@@ -18,6 +18,8 @@ export default function CameraScreen({navigation}) {
   const cameraRef = useRef(null)
   const [countdown, setCountdown] = useState(null)
   const [timerEnabled, setTimerEnabled] = useState(false)
+  const [shutterPressed, setShutterPressed] = useState(false)
+  const [flash, setFlash] = useState('off')
 
   useEffect(() => {
   if (photo) {
@@ -54,10 +56,11 @@ const startCountdown = () => {
 
 const capturePhoto = async () => {
   if (cameraRef.current) {
+    setShutterPressed(true)
     setIsLoading(true)
     const result = await cameraRef.current.takePictureAsync()
     setPhoto(result.uri)
-    console.log('Photo taken:', result.uri)
+    setShutterPressed(false)
   }
 }
 
@@ -120,7 +123,20 @@ const capturePhoto = async () => {
         {photo ? (
           <Image source={{ uri: photo }} style={styles.camera} />
         ) : (
-          <CameraView style={styles.camera} facing={facing} ref={cameraRef} />
+          <CameraView style={styles.camera} facing={facing} ref={cameraRef} flash={flash}>
+            <View style={styles.viewfinderControls}>
+              <TouchableOpacity
+                onPress={() => setFlash(flash === 'off' ? 'on' : 'off')}
+                style={styles.flashButton}
+              >
+                <Ionicons
+                  name={flash === 'off' ? 'flash-off-outline' : 'flash-outline'}
+                  size={22}
+                  color={flash === 'on' ? '#FFD60A' : colors.ivory}
+                />
+              </TouchableOpacity>
+            </View>
+          </CameraView>
         )}
         {photo && isLoading && (
           <View style={styles.analysingOverlay}>
@@ -152,9 +168,9 @@ const capturePhoto = async () => {
                 <Text style={styles.countdownText}>{countdown}</Text>
               )}
               <TouchableOpacity
-                style={styles.shutterButton}
+                style={[styles.shutterButton, shutterPressed && styles.shutterButtonPressed]}
                 onPress={timerEnabled ? startCountdown : capturePhoto}
-                disabled={isLoading || countdown !== null}
+                disabled={isLoading || countdown !== null || shutterPressed}
               >
                 <View style={styles.shutterInner} />
               </TouchableOpacity>
@@ -280,5 +296,22 @@ countdownText: {
   fontSize: typography.sizes.xxl,
   fontFamily: typography.fonts.cormorantItalic,
   lineHeight: typography.sizes.xxl,
+},
+shutterButtonPressed: {
+  opacity: 0.6,
+  transform: [{ scale: 0.95 }],
+},
+viewfinderControls: {
+  position: 'absolute',
+  top: 16,
+  right: 16,
+},
+flashButton: {
+  width: 36,
+  height: 36,
+  borderRadius: 18,
+  backgroundColor: 'rgba(0,0,0,0.3)',
+  justifyContent: 'center',
+  alignItems: 'center',
 },
 })
