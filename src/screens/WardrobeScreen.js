@@ -6,7 +6,7 @@ import {
 import {useFocusEffect} from '@react-navigation/native'
 import { colors } from '../constants/colors'
 import { typography } from '../constants/typography'
-import { fetchWardrobe } from '../services/wardrobeService'
+import { fetchWardrobe } from '../services/itemService'
 
 const CATEGORIES = ['All', 'Tops', 'Bottoms', 'Dresses', 'Shoes', 'Accessories', 'Outerwear']
 

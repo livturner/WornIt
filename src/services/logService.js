@@ -1,14 +1,11 @@
 import { supabase } from './supabase'
 
 export async function saveOutfitLog(photoUri, confirmedItems) {
-  // Get the current user
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) throw new Error('Not authenticated')
 
-  // 1. Upload photo to Supabase Storage
   const photoUrl = await uploadPhoto(photoUri, user.id)
 
-  // 2. Create the log entry
   const { data: log, error: logError } = await supabase
     .from('logs')
     .insert({ user_id: user.id, photo_url: photoUrl })
@@ -17,11 +14,9 @@ export async function saveOutfitLog(photoUri, confirmedItems) {
 
   if (logError) throw logError
 
-  // 3. Save each confirmed item
   for (const item of confirmedItems) {
     const savedItem = await saveOrUpdateItem(item, user.id)
 
-    // 4. Link item to log
     const { error: linkError } = await supabase
       .from('log_items')
       .insert({ log_id: log.id, item_id: savedItem.id })
@@ -51,7 +46,6 @@ async function uploadPhoto(photoUri, userId) {
 }
 
 async function saveOrUpdateItem(item, userId) {
-  // Check if item already exists for this user
   const { data: existing } = await supabase
     .from('items')
     .select()
@@ -60,7 +54,6 @@ async function saveOrUpdateItem(item, userId) {
     .single()
 
   if (existing) {
-    // Item exists — increment wear count
     const { data: updated, error } = await supabase
       .from('items')
       .update({ wear_count: existing.wear_count + 1 })
@@ -71,7 +64,6 @@ async function saveOrUpdateItem(item, userId) {
     if (error) throw error
     return updated
   } else {
-    // New item — create it
     const { data: newItem, error } = await supabase
       .from('items')
       .insert({
@@ -116,35 +108,6 @@ export async function fetchTimeline() {
   return data
 }
 
-export async function fetchWardrobe() {
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) throw new Error('Not authenticated')
-
-  const { data, error } = await supabase
-    .from('items')
-    .select(`
-      id,
-      name,
-      category,
-      color,
-      wear_count,
-      first_worn_at,
-      created_at,
-      log_items (
-        log_id,
-        logs (
-          photo_url,
-          logged_at
-        )
-      )
-    `)
-    .eq('user_id', user.id)
-    .order('created_at', { ascending: false })
-
-  if (error) throw error
-  return data
-}
-
 export async function fetchLogById(logId) {
   const { data, error } = await supabase
     .from('logs')
@@ -178,40 +141,6 @@ export async function deleteLog(logId) {
   if (error) throw error
 }
 
-export async function fetchItemById(itemId) {
-  const { data, error } = await supabase
-    .from('items')
-    .select(`
-      id,
-      name,
-      category,
-      color,
-      wear_count,
-      created_at,
-      log_items (
-        logs (
-          id,
-          photo_url,
-          logged_at
-        )
-      )
-    `)
-    .eq('id', itemId)
-    .single()
-
-  if (error) throw error
-  return data
-}
-
-export async function deleteItem(itemId) {
-  const { error } = await supabase
-    .from('items')
-    .delete()
-    .eq('id', itemId)
-
-  if (error) throw error
-}
-
 export async function fetchStreak() {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return 0
@@ -224,17 +153,14 @@ export async function fetchStreak() {
 
   if (error || !data.length) return 0
 
-  // Get unique days
-  const days = [...new Set(data.map(log => 
+  const days = [...new Set(data.map(log =>
     new Date(log.logged_at).toISOString().split('T')[0]
   ))]
 
-  // Count consecutive days from today
   let streak = 0
   const today = new Date().toISOString().split('T')[0]
   const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0]
 
-  // Streak is still alive if logged today or yesterday
   if (days[0] !== today && days[0] !== yesterday) return 0
 
   for (let i = 0; i < days.length; i++) {

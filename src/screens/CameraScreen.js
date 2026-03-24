@@ -6,7 +6,7 @@ import { typography } from '../constants/typography'
 import { Ionicons } from '@expo/vector-icons'
 import { identifyOutfit } from '../services/openai'
 import ConfirmationScreen from './ConfirmationScreen'
-import { saveOutfitLog } from '../services/wardrobeService'
+import { saveOutfitLog } from '../services/logService'
 
 export default function CameraScreen({navigation}) {
   const [permission, requestPermission] = useCameraPermissions()

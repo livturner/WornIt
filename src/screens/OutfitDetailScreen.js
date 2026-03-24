@@ -7,7 +7,7 @@ import { Ionicons } from '@expo/vector-icons'
 import { colors } from '../constants/colors'
 import { colorToHex } from '../utils/colorUtils'
 import { typography } from '../constants/typography'
-import { fetchLogById, deleteLog } from '../services/wardrobeService'
+import { fetchLogById, deleteLog } from '../services/logService'
 
 export default function OutfitDetailScreen({ route, navigation }) {
   const { logId } = route.params

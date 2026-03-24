@@ -7,7 +7,7 @@ import { Ionicons } from '@expo/vector-icons'
 import { colors } from '../constants/colors'
 import { colorToHex } from '../utils/colorUtils'
 import { typography } from '../constants/typography'
-import { fetchItemById, deleteItem } from '../services/wardrobeService'
+import { fetchItemById, deleteItem } from '../services/itemService'
 
 export default function ItemDetailScreen({ route, navigation }) {
   const { itemId } = route.params

@@ -6,7 +6,7 @@ import {
 import { useFocusEffect } from '@react-navigation/native'
 import { colors } from '../constants/colors'
 import { typography } from '../constants/typography'
-import { fetchTimeline, fetchStreak } from '../services/wardrobeService'
+import { fetchTimeline, fetchStreak } from '../services/logService'
 
 export default function TimelineScreen({navigation}) {
   const [logs, setLogs] = useState([])
