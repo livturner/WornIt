@@ -142,13 +142,13 @@ const styles = StyleSheet.create({
     color: colors.steelBlue,
   },
   tagline: {
-    color: '#888',
+    color: colors.tertiaryText,
     fontSize: typography.sizes.sm,
     letterSpacing: 1,
   },
   tabRow: {
     flexDirection: 'row',
-    backgroundColor: '#1E2318',
+    backgroundColor: colors.cardBackground,
     borderRadius: 12,
     marginBottom: 24,
     padding: 4,
@@ -163,7 +163,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.oliveGreen,
   },
   tabText: {
-    color: '#666',
+    color: colors.secondaryText,
     fontSize: typography.sizes.sm,
     fontWeight: typography.weights.medium,
   },
@@ -175,7 +175,7 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   input: {
-    backgroundColor: '#1E2318',
+    backgroundColor: colors.cardBackground,
     color: colors.ivory,
     borderRadius: 12,
     padding: 16,
@@ -184,7 +184,7 @@ const styles = StyleSheet.create({
     borderColor: '#333',
   },
   errorText: {
-    color: '#E07070',
+    color: colors.errorText,
     fontSize: typography.sizes.sm,
     textAlign: 'center',
   },

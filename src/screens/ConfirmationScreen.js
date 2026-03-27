@@ -147,7 +147,7 @@ export default function ConfirmationScreen({ photo, items: initialItems, onSave,
                 <Ionicons
                   name={item.confirmed ? 'checkmark-circle' : 'ellipse-outline'}
                   size={26}
-                  color={item.confirmed ? colors.steelBlue : '#999'}
+                  color={item.confirmed ? colors.steelBlue : colors.mutedText}
                 />
               </TouchableOpacity>
             </View>
@@ -243,7 +243,7 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   subtitle: {
-    color: '#999',
+    color: colors.mutedText,
     fontSize: typography.sizes.sm,
   },
   confirmAllButton: {
@@ -267,7 +267,7 @@ const styles = StyleSheet.create({
   card: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#1E2318',
+    backgroundColor: colors.cardBackground,
     borderRadius: 12,
     marginBottom: 10,
     padding: 12,
@@ -352,7 +352,7 @@ const styles = StyleSheet.create({
     padding: 16,
     gap: 12,
     borderTopWidth: 1,
-    borderTopColor: '#1E2318',
+    borderTopColor: colors.cardBackground,
   },
   retakeButton: {
     flex: 1,
@@ -388,7 +388,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0,0,0,0.5)',
   },
   colorSheet: {
-    backgroundColor: '#1E2318',
+    backgroundColor: colors.cardBackground,
     padding: 24,
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,

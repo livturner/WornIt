@@ -190,7 +190,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   emptySubtitle: {
-    color: '#666',
+    color: colors.secondaryText,
     fontSize: typography.sizes.sm,
     textAlign: 'center',
   },

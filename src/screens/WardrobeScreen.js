@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useCallback } from 'react'
 import {
   View, Text, ScrollView, Image,
   TouchableOpacity, ActivityIndicator, StyleSheet, RefreshControl, Alert
@@ -217,7 +217,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   emptySubtitle: {
-    color: '#666',
+    color: colors.secondaryText,
     fontSize: typography.sizes.sm,
     textAlign: 'center',
     lineHeight: 20,
@@ -234,7 +234,7 @@ const styles = StyleSheet.create({
     letterSpacing: -0.5,
   },
   itemCount: {
-    color: '#666',
+    color: colors.secondaryText,
     fontSize: typography.sizes.sm,
     marginTop: 2,
   },
@@ -250,7 +250,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   tabText: {
-    color: '#666',
+    color: colors.secondaryText,
     fontSize: typography.sizes.sm,
     letterSpacing: 0.5,
   },
@@ -269,7 +269,7 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     borderTopWidth: 1,
     borderBottomWidth: 1,
-    borderColor: '#1E2318',
+    borderColor: colors.cardBackground,
     marginTop: 8,
   },
   stat: {
@@ -282,14 +282,14 @@ const styles = StyleSheet.create({
     fontFamily: typography.fonts.cormorantItalic,
   },
   statLabel: {
-    color: '#666',
+    color: colors.secondaryText,
     fontSize: typography.sizes.xs,
     letterSpacing: 0.5,
     marginTop: 2,
   },
   statDivider: {
     width: 1,
-    backgroundColor: '#1E2318',
+    backgroundColor: colors.cardBackground,
   },
   scroll: {
     flex: 1,
@@ -306,7 +306,7 @@ const styles = StyleSheet.create({
     height: 180,
     borderRadius: 10,
     overflow: 'hidden',
-    backgroundColor: '#1E2318',
+    backgroundColor: colors.cardBackground,
   },
   cardTall: {
     height: 240,
@@ -319,7 +319,7 @@ const styles = StyleSheet.create({
   cardPlaceholder: {
     width: '100%',
     height: '100%',
-    backgroundColor: '#1E2318',
+    backgroundColor: colors.cardBackground,
   },
   cardOverlay: {
     position: 'absolute',
@@ -374,7 +374,7 @@ const styles = StyleSheet.create({
   paddingTop: 60,
 },
 emptyCategoryText: {
-  color: '#666',
+  color: colors.secondaryText,
   fontSize: typography.sizes.md,
   fontFamily: typography.fonts.cormorantItalic,
 },

@@ -157,7 +157,7 @@ const styles = StyleSheet.create({
     resizeMode: 'cover',
   },
   photoPlaceholder: {
-    backgroundColor: '#1E2318',
+    backgroundColor: colors.cardBackground,
   },
   backButton: {
     position: 'absolute',
@@ -205,7 +205,7 @@ const styles = StyleSheet.create({
     marginBottom: 2,
   },
   itemCategory: {
-    color: '#888',
+    color: colors.tertiaryText,
     fontSize: typography.sizes.xs,
     textTransform: 'capitalize',
     letterSpacing: 0.5,
@@ -219,7 +219,7 @@ const styles = StyleSheet.create({
     marginBottom: 24,
   },
   sectionTitle: {
-    color: '#666',
+    color: colors.secondaryText,
     fontSize: typography.sizes.xs,
     letterSpacing: 1.5,
     textTransform: 'uppercase',
@@ -230,7 +230,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: 10,
     borderBottomWidth: 1,
-    borderBottomColor: '#1E2318',
+    borderBottomColor: colors.cardBackground,
   },
   logThumb: {
     width: 44,
@@ -240,7 +240,7 @@ const styles = StyleSheet.create({
     resizeMode: 'cover',
   },
   logThumbPlaceholder: {
-    backgroundColor: '#1E2318',
+    backgroundColor: colors.cardBackground,
   },
   logDate: {
     color: colors.ivory,
