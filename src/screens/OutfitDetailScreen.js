@@ -1,13 +1,15 @@
 import { useState, useEffect } from 'react'
 import {
   View, Text, Image, ScrollView,
-  TouchableOpacity, StyleSheet, Alert
+  StyleSheet, Alert
 } from 'react-native'
-import { Ionicons } from '@expo/vector-icons'
 import { colors } from '../constants/colors'
-import { colorToHex } from '../utils/colorUtils'
 import { typography } from '../constants/typography'
 import { fetchLogById, deleteLog } from '../services/logService'
+import DetailHeader from '../components/DetailHeader'
+import SectionTitle from '../components/SectionTitle'
+import ItemRow from '../components/ItemRow'
+import ItemTag from '../components/ItemTag'
 
 export default function OutfitDetailScreen({ route, navigation }) {
   const { logId } = route.params
@@ -81,21 +83,7 @@ export default function OutfitDetailScreen({ route, navigation }) {
         <View style={styles.photoContainer}>
           <Image source={{ uri: log.photo_url }} style={styles.photo} />
 
-          {/* Back button */}
-          <TouchableOpacity
-            style={styles.backButton}
-            onPress={() => navigation.goBack()}
-          >
-            <Ionicons name="chevron-back" size={24} color={colors.ivory} />
-          </TouchableOpacity>
-
-          {/* Delete button */}
-          <TouchableOpacity
-            style={styles.deleteButton}
-            onPress={handleDelete}
-          >
-            <Ionicons name="trash-outline" size={20} color={colors.ivory} />
-          </TouchableOpacity>
+          <DetailHeader onBack={() => navigation.goBack()} onDelete={handleDelete} />
         </View>
 
         {/* Content */}
@@ -106,28 +94,19 @@ export default function OutfitDetailScreen({ route, navigation }) {
 
           {/* Items */}
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Items</Text>
+            <SectionTitle label="Items" />
             {items.map((item, index) => (
-              <View key={index} style={styles.itemRow}>
-                <View style={[styles.colorDot, { backgroundColor: colorToHex(item.color) }]} />
-                <View style={styles.itemInfo}>
-                  <Text style={styles.itemName}>{item.name}</Text>
-                  <Text style={styles.itemCategory}>{item.category}</Text>
-                </View>
-                <Text style={styles.wearCount}>×{item.wear_count}</Text>
-              </View>
+              <ItemRow key={index} item={item} />
             ))}
           </View>
 
           {/* Worn with */}
           {items.length > 1 && (
             <View style={styles.section}>
-              <Text style={styles.sectionTitle}>Worn together</Text>
+              <SectionTitle label="Worn together" />
               <View style={styles.tagRow}>
                 {items.map((item, index) => (
-                  <View key={index} style={styles.tag}>
-                    <Text style={styles.tagText}>{item.name.toUpperCase()}</Text>
-                  </View>
+                  <ItemTag key={index} name={item.name} variant="solid" />
                 ))}
               </View>
             </View>
@@ -153,28 +132,6 @@ const styles = StyleSheet.create({
     height: '100%',
     resizeMode: 'cover',
   },
-  backButton: {
-    position: 'absolute',
-    top: 56,
-    left: 16,
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    backgroundColor: 'rgba(0,0,0,0.4)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  deleteButton: {
-    position: 'absolute',
-    top: 56,
-    right: 16,
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    backgroundColor: 'rgba(0,0,0,0.4)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
   content: {
     padding: 20,
   },
@@ -187,58 +144,9 @@ const styles = StyleSheet.create({
   section: {
     marginBottom: 24,
   },
-  sectionTitle: {
-    color: colors.secondaryText,
-    fontSize: typography.sizes.xs,
-    letterSpacing: 1.5,
-    textTransform: 'uppercase',
-    marginBottom: 12,
-  },
-  itemRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingVertical: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.cardBackground,
-  },
-  colorDot: {
-    width: 24,
-    height: 24,
-    borderRadius: 12,
-    marginRight: 12,
-  },
-  itemInfo: {
-    flex: 1,
-  },
-  itemName: {
-    color: colors.ivory,
-    fontSize: typography.sizes.md,
-    marginBottom: 2,
-  },
-  itemCategory: {
-    color: colors.tertiaryText,
-    fontSize: typography.sizes.xs,
-    textTransform: 'capitalize',
-  },
-  wearCount: {
-    color: colors.steelBlue,
-    fontSize: typography.sizes.sm,
-    fontWeight: typography.weights.bold,
-  },
   tagRow: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: 6,
-  },
-  tag: {
-    backgroundColor: colors.cardBackground,
-    paddingHorizontal: 10,
-    paddingVertical: 5,
-    borderRadius: 4,
-  },
-  tagText: {
-    color: colors.ivory,
-    fontSize: 8,
-    letterSpacing: 1,
   },
 })

@@ -1,13 +1,14 @@
 import { useState, useEffect } from 'react'
 import {
   View, Text, Image, ScrollView,
-  TouchableOpacity, StyleSheet, Alert
+  StyleSheet, Alert
 } from 'react-native'
-import { Ionicons } from '@expo/vector-icons'
 import { colors } from '../constants/colors'
 import { colorToHex } from '../utils/colorUtils'
 import { typography } from '../constants/typography'
 import { fetchItemById, deleteItem } from '../services/itemService'
+import DetailHeader from '../components/DetailHeader'
+import SectionTitle from '../components/SectionTitle'
 
 export default function ItemDetailScreen({ route, navigation }) {
   const { itemId } = route.params
@@ -89,21 +90,7 @@ export default function ItemDetailScreen({ route, navigation }) {
             <View style={[styles.photo, styles.photoPlaceholder]} />
           )}
 
-          {/* Back button */}
-          <TouchableOpacity
-            style={styles.backButton}
-            onPress={() => navigation.goBack()}
-          >
-            <Ionicons name="chevron-back" size={24} color={colors.ivory} />
-          </TouchableOpacity>
-
-          {/* Delete button */}
-          <TouchableOpacity
-            style={styles.deleteButton}
-            onPress={handleDelete}
-          >
-            <Ionicons name="trash-outline" size={20} color={colors.ivory} />
-          </TouchableOpacity>
+          <DetailHeader onBack={() => navigation.goBack()} onDelete={handleDelete} />
         </View>
 
         {/* Content */}
@@ -122,7 +109,7 @@ export default function ItemDetailScreen({ route, navigation }) {
           {/* Wear history */}
           {logs.length > 0 && (
             <View style={styles.section}>
-              <Text style={styles.sectionTitle}>Worn on</Text>
+              <SectionTitle label="Worn on" />
               {logs.map((log, index) => (
                 <View key={log.id || index} style={styles.logRow}>
                   {log.photo_url ? (
@@ -158,28 +145,6 @@ const styles = StyleSheet.create({
   },
   photoPlaceholder: {
     backgroundColor: colors.cardBackground,
-  },
-  backButton: {
-    position: 'absolute',
-    top: 56,
-    left: 16,
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    backgroundColor: 'rgba(0,0,0,0.4)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  deleteButton: {
-    position: 'absolute',
-    top: 56,
-    right: 16,
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    backgroundColor: 'rgba(0,0,0,0.4)',
-    justifyContent: 'center',
-    alignItems: 'center',
   },
   content: {
     padding: 20,
@@ -217,13 +182,6 @@ const styles = StyleSheet.create({
   },
   section: {
     marginBottom: 24,
-  },
-  sectionTitle: {
-    color: colors.secondaryText,
-    fontSize: typography.sizes.xs,
-    letterSpacing: 1.5,
-    textTransform: 'uppercase',
-    marginBottom: 12,
   },
   logRow: {
     flexDirection: 'row',

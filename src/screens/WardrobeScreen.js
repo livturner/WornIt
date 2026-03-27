@@ -1,12 +1,14 @@
 import { useState, useCallback } from 'react'
 import {
   View, Text, ScrollView, Image,
-  TouchableOpacity, ActivityIndicator, StyleSheet, RefreshControl, Alert
+  TouchableOpacity, StyleSheet, RefreshControl, Alert
 } from 'react-native'
 import {useFocusEffect} from '@react-navigation/native'
 import { colors } from '../constants/colors'
 import { typography } from '../constants/typography'
 import { fetchWardrobe } from '../services/itemService'
+import LoadingScreen from '../components/LoadingScreen'
+import EmptyState from '../components/EmptyState'
 
 const CATEGORIES = ['All', 'Tops', 'Bottoms', 'Dresses', 'Shoes', 'Accessories', 'Outerwear']
 
@@ -63,20 +65,14 @@ export default function WardrobeScreen({ navigation }) {
     return daysSince > 30 && item.wear_count < 2
   }
 
-  if (isLoading) {
-    return (
-      <View style={styles.loadingContainer}>
-        <ActivityIndicator color={colors.ivory} />
-      </View>
-    )
-  }
+  if (isLoading) return <LoadingScreen />
 
   if (items.length === 0) {
     return (
-      <View style={styles.emptyContainer}>
-        <Text style={styles.emptyTitle}>Your wardrobe is empty</Text>
-        <Text style={styles.emptySubtitle}>Your wardrobe builds itself. Log your first outfit to get started.</Text>
-      </View>
+      <EmptyState
+        title="Your wardrobe is empty"
+        subtitle="Your wardrobe builds itself. Log your first outfit to get started."
+      />
     )
   }
 
@@ -195,32 +191,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.oliveGreen,
-  },
-  loadingContainer: {
-    flex: 1,
-    backgroundColor: colors.oliveGreen,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  emptyContainer: {
-    flex: 1,
-    backgroundColor: colors.oliveGreen,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 40,
-  },
-  emptyTitle: {
-    color: colors.ivory,
-    fontSize: typography.sizes.xl,
-    fontFamily: typography.fonts.cormorantItalic,
-    marginBottom: 8,
-    textAlign: 'center',
-  },
-  emptySubtitle: {
-    color: colors.secondaryText,
-    fontSize: typography.sizes.sm,
-    textAlign: 'center',
-    lineHeight: 20,
   },
   header: {
     paddingTop: 60,

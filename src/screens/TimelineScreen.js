@@ -1,12 +1,15 @@
 import { useState, useEffect, useCallback } from 'react'
 import {
   View, Text, ScrollView, Image,
-  TouchableOpacity, ActivityIndicator, StyleSheet, RefreshControl, Alert
+  TouchableOpacity, StyleSheet, RefreshControl, Alert
 } from 'react-native'
 import { useFocusEffect } from '@react-navigation/native'
 import { colors } from '../constants/colors'
 import { typography } from '../constants/typography'
 import { fetchTimeline, fetchStreak } from '../services/logService'
+import LoadingScreen from '../components/LoadingScreen'
+import EmptyState from '../components/EmptyState'
+import ItemTag from '../components/ItemTag'
 
 export default function TimelineScreen({navigation}) {
   const [logs, setLogs] = useState([])
@@ -69,26 +72,14 @@ export default function TimelineScreen({navigation}) {
     return log.log_items?.map(li => li.items).filter(Boolean) || []
   }
 
-  const ItemTag = ({ name }) => (
-    <View style={styles.tag}>
-      <Text style={styles.tagText}>{name.toUpperCase()}</Text>
-    </View>
-  )
-
-  if (isLoading) {
-    return (
-      <View style={styles.loadingContainer}>
-        <ActivityIndicator color={colors.ivory} />
-      </View>
-    )
-  }
+  if (isLoading) return <LoadingScreen />
 
   if (logs.length === 0) {
     return (
-      <View style={styles.emptyContainer}>
-        <Text style={styles.emptyTitle}>No fits logged yet</Text>
-        <Text style={styles.emptySubtitle}>Head to the camera tab to log your first outfit</Text>
-      </View>
+      <EmptyState
+        title="No fits logged yet"
+        subtitle="Head to the camera tab to log your first outfit"
+      />
     )
   }
 
@@ -169,31 +160,6 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.oliveGreen,
   },
-  loadingContainer: {
-    flex: 1,
-    backgroundColor: colors.oliveGreen,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  emptyContainer: {
-    flex: 1,
-    backgroundColor: colors.oliveGreen,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 40,
-  },
-  emptyTitle: {
-    color: colors.ivory,
-    fontSize: typography.sizes.xl,
-    fontFamily: typography.fonts.cormorantItalic,
-    marginBottom: 8,
-    textAlign: 'center',
-  },
-  emptySubtitle: {
-    color: colors.secondaryText,
-    fontSize: typography.sizes.sm,
-    textAlign: 'center',
-  },
   header: {
     paddingTop: 60,
     paddingHorizontal: 16,
@@ -257,19 +223,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: 4,
-  },
-  tag: {
-    backgroundColor: 'rgba(0,0,0,0.5)',
-    paddingHorizontal: 8,
-    paddingVertical: 3,
-    borderRadius: 4,
-    borderWidth: 0.5,
-    borderColor: 'rgba(255, 255, 255, 0.2)',
-  },
-  tagText: {
-    color: colors.ivory,
-    fontSize: 8,
-    letterSpacing: 1,
   },
   grid: {
     flexDirection: 'row',
