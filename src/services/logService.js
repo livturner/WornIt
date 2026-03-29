@@ -14,15 +14,15 @@ export async function saveOutfitLog(photoUri, confirmedItems) {
 
   if (logError) throw logError
 
-  for (const item of confirmedItems) {
-    const savedItem = await saveOrUpdateItem(item, user.id)
-
-    const { error: linkError } = await supabase
-      .from('log_items')
-      .insert({ log_id: log.id, item_id: savedItem.id })
-
-    if (linkError) throw linkError
-  }
+  await Promise.all(
+    confirmedItems.map(async (item) => {
+      const savedItem = await saveOrUpdateItem(item, user.id)
+      const { error: linkError } = await supabase
+        .from('log_items')
+        .insert({ log_id: log.id, item_id: savedItem.id })
+      if (linkError) throw linkError
+    })
+  )
 
   return log
 }

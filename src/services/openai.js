@@ -14,13 +14,8 @@ export async function identifyOutfit(photoUri) {
 })).uri
 
   const response = await fetch(compressedUri)
-  const blob = await response.blob()
-  const base64 = await new Promise((resolve, reject) => {
-    const reader = new FileReader()
-    reader.onload = () => resolve(reader.result.split(',')[1])
-    reader.onerror = reject
-    reader.readAsDataURL(blob)
-  })
+  const arrayBuffer = await response.arrayBuffer()
+  const base64 = btoa(String.fromCharCode(...new Uint8Array(arrayBuffer)))
 
   // Send to GPT-4 Vision
   const result = await fetch('https://api.openai.com/v1/chat/completions', {
@@ -59,7 +54,7 @@ export async function identifyOutfit(photoUri) {
               Only return a JSON array, no other text. Each item needs:
               - name: short natural description as a person would say it (e.g. "navy houndstooth cardigan", "light wash wide leg jeans", "brown UGG slippers")
               - category: tops | bottoms | dresses | outerwear | shoes | accessories
-              - color: single primary color word only (e.g. "red", "grey", "brown")
+              - color: dominant background color as a single word — for patterns pick the background color (e.g. for navy/white houndstooth return "navy", for black/white stripes return "black")
               - confirmed: false`,
             },
           ],
