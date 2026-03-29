@@ -88,7 +88,7 @@ const capturePhoto = async () => {
     )
   }
 
-  if (photo && !isLoading && items.length > 0) {
+  if (photo && !isLoading) {
   return (
     <ConfirmationScreen
       photo={photo}

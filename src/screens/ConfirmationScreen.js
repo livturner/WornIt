@@ -172,10 +172,10 @@ export default function ConfirmationScreen({ photo, items: initialItems, onSave,
             pressed && hasConfirmed && !isSaving && { opacity: 0.8, transform: [{ scale: 0.98 }] },
           ]}
           onPress={async () => {
-            if (hasConfirmed && !isSaving) return
-              setIsSaving(true)
-              await onSave(items.filter(i => i.confirmed))
-            }}
+            if (!hasConfirmed || isSaving) return
+            setIsSaving(true)
+            await onSave(items.filter(i => i.confirmed))
+          }}
           disabled={!hasConfirmed || isSaving}
         >
           <Text style={styles.saveButtonText}>

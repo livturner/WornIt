@@ -50,7 +50,7 @@ async function saveOrUpdateItem(item, userId) {
     .from('items')
     .select()
     .eq('user_id', userId)
-    .or(`name.ilike.${item.name},original_name.ilike.${item.name}`)
+    .or(`name.ilike."${item.name}",original_name.ilike."${item.name}"`)
     .single()
 
   if (existing) {
@@ -157,14 +157,16 @@ export async function fetchStreak() {
     new Date(log.logged_at).toISOString().split('T')[0]
   ))]
 
-  let streak = 0
   const today = new Date().toISOString().split('T')[0]
   const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0]
 
   if (days[0] !== today && days[0] !== yesterday) return 0
 
+  const offset = days[0] === yesterday ? 1 : 0
+  let streak = 0
+
   for (let i = 0; i < days.length; i++) {
-    const expected = new Date(Date.now() - i * 86400000).toISOString().split('T')[0]
+    const expected = new Date(Date.now() - (i + offset) * 86400000).toISOString().split('T')[0]
     if (days[i] === expected) {
       streak++
     } else {
