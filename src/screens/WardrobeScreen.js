@@ -1,14 +1,16 @@
 import { useState, useCallback } from 'react'
 import {
-  View, Text, ScrollView, Image,
-  TouchableOpacity, StyleSheet, RefreshControl, Alert
+  View, Text, ScrollView, TouchableOpacity, 
+  StyleSheet, RefreshControl, Alert
 } from 'react-native'
+import { Image } from 'expo-image'
 import {useFocusEffect} from '@react-navigation/native'
 import { colors } from '../constants/colors'
 import { typography } from '../constants/typography'
 import { fetchWardrobe } from '../services/itemService'
 import LoadingScreen from '../components/LoadingScreen'
 import EmptyState from '../components/EmptyState'
+import { colorToHex } from '../utils/colorUtils'
 
 const CATEGORIES = ['All', 'Tops', 'Bottoms', 'Dresses', 'Shoes', 'Accessories', 'Outerwear']
 
@@ -154,17 +156,12 @@ export default function WardrobeScreen({ navigation }) {
               onPress={() => navigation.navigate('ItemDetail', { itemId: item.id })}
             >
               {photoUrl ? (
-                <Image source={{ uri: photoUrl }} style={styles.cardImage} />
+                <Image source={{ uri: photoUrl }} style={styles.cardImage} contentFit="cover" cachePolicy="memory-disk" transition={200} />
               ) : (
                 <View style={styles.cardPlaceholder} />
               )}
 
               <View style={styles.cardOverlay} />
-
-              {/* Wear count badge */}
-              <View style={styles.wearBadge}>
-                <Text style={styles.wearBadgeText}>×{item.wear_count}</Text>
-              </View>
 
               {/* Unworn badge */}
               {unworn && (
@@ -173,9 +170,16 @@ export default function WardrobeScreen({ navigation }) {
                 </View>
               )}
 
-              {/* Item name */}
+              {/* Item name and metadata */}
               <View style={styles.cardContent}>
-                <Text style={styles.cardName} numberOfLines={2}>{item.name}</Text>
+                <Text style={styles.cardName} numberOfLines={1}>{item.name}</Text>
+                <View style={styles.cardChips}>
+                  <View style={styles.chip}>
+                    <Text style={styles.chipText}>{item.category}</Text>
+                  </View>
+                  <View style={[styles.chip, styles.colorChip, { backgroundColor: colorToHex(item.color) }]} />
+                </View>
+                <Text style={styles.cardWears}>×{item.wear_count}</Text>
               </View>
 
             </TouchableOpacity>
@@ -273,18 +277,17 @@ const styles = StyleSheet.create({
   },
   card: {
     width: '49.6%',
-    height: 180,
+    height: 200,
     borderRadius: 10,
     overflow: 'hidden',
     backgroundColor: colors.cardBackground,
   },
   cardTall: {
-    height: 240,
+    height: 260,
   },
   cardImage: {
     width: '100%',
     height: '100%',
-    resizeMode: 'cover',
   },
   cardPlaceholder: {
     width: '100%',
@@ -298,20 +301,6 @@ const styles = StyleSheet.create({
     right: 0,
     bottom: 0,
     backgroundColor: 'rgba(0,0,0,0.2)',
-  },
-  wearBadge: {
-    position: 'absolute',
-    top: 8,
-    right: 8,
-    backgroundColor: 'rgba(70,130,180,0.85)',
-    paddingHorizontal: 6,
-    paddingVertical: 3,
-    borderRadius: 4,
-  },
-  wearBadgeText: {
-    color: colors.ivory,
-    fontSize: 10,
-    fontWeight: typography.weights.bold,
   },
   unwornBadge: {
     position: 'absolute',
@@ -329,23 +318,57 @@ const styles = StyleSheet.create({
   },
   cardContent: {
     position: 'absolute',
-    bottom: 8,
-    left: 8,
-    right: 8,
+    bottom: 0,
+    left: 0,
+    right: 0,
+    padding: 8,
+    backgroundColor: 'rgba(0,0,0,0.6)',
   },
   cardName: {
     color: colors.ivory,
-    fontSize: 10,
-    letterSpacing: 0.3,
+    fontSize: 11,
+    fontWeight: typography.weights.bold,
+    letterSpacing: 0.2,
+    marginBottom: 4,
+  },
+  cardChips: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    marginBottom: 2,
+  },
+  chip: {
+    backgroundColor: 'rgba(255,255,255,0.15)',
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 3,
+  },
+  chipText: {
+    color: colors.ivory,
+    fontSize: 8,
+    letterSpacing: 0.5,
+    textTransform: 'capitalize',
+  },
+  colorChip: {
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+    paddingHorizontal: 0,
+    paddingVertical: 0,
+  },
+  cardWears: {
+    color: colors.steelBlue,
+    fontSize: 9,
+    fontWeight: typography.weights.bold,
   },
   emptyCategory: {
-  flex: 1,
-  alignItems: 'center',
-  paddingTop: 60,
-},
-emptyCategoryText: {
-  color: colors.secondaryText,
-  fontSize: typography.sizes.md,
-  fontFamily: typography.fonts.cormorantItalic,
-},
+    flex: 1,
+    alignItems: 'center',
+    paddingTop: 60,
+  },
+  emptyCategoryText: {
+    color: colors.secondaryText,
+    fontSize: typography.sizes.md,
+    fontFamily: typography.fonts.cormorantItalic,
+  },
 })

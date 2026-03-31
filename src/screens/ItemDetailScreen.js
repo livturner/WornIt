@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react'
 import {
-  View, Text, Image, ScrollView,
+  View, Text, ScrollView,
   StyleSheet, Alert
 } from 'react-native'
+import { Image } from 'expo-image'
 import { colors } from '../constants/colors'
 import { colorToHex } from '../utils/colorUtils'
 import { typography } from '../constants/typography'
@@ -85,7 +86,7 @@ export default function ItemDetailScreen({ route, navigation }) {
         {/* Full bleed photo */}
         <View style={styles.photoContainer}>
           {coverPhoto ? (
-            <Image source={{ uri: coverPhoto }} style={styles.photo} />
+            <Image source={{ uri: coverPhoto }} style={styles.photo} contentFit="cover" cachePolicy="memory-disk" priority="high" transition={200} />
           ) : (
             <View style={[styles.photo, styles.photoPlaceholder]} />
           )}
@@ -113,7 +114,7 @@ export default function ItemDetailScreen({ route, navigation }) {
               {logs.map((log, index) => (
                 <View key={log.id || index} style={styles.logRow}>
                   {log.photo_url ? (
-                    <Image source={{ uri: log.photo_url }} style={styles.logThumb} />
+                    <Image source={{ uri: log.photo_url }} style={styles.logThumb} contentFit="cover" cachePolicy="memory-disk" transition={200} />
                   ) : (
                     <View style={[styles.logThumb, styles.logThumbPlaceholder]} />
                   )}
@@ -141,7 +142,6 @@ const styles = StyleSheet.create({
   photo: {
     width: '100%',
     height: '100%',
-    resizeMode: 'cover',
   },
   photoPlaceholder: {
     backgroundColor: colors.cardBackground,
@@ -195,7 +195,6 @@ const styles = StyleSheet.create({
     height: 44,
     borderRadius: 6,
     marginRight: 14,
-    resizeMode: 'cover',
   },
   logThumbPlaceholder: {
     backgroundColor: colors.cardBackground,

@@ -1,8 +1,9 @@
 import { useState, useEffect, useCallback } from 'react'
 import {
-  View, Text, ScrollView, Image,
-  TouchableOpacity, StyleSheet, RefreshControl, Alert
+  View, Text, ScrollView, TouchableOpacity, 
+  StyleSheet, RefreshControl, Alert
 } from 'react-native'
+import { Image } from 'expo-image'
 import { useFocusEffect } from '@react-navigation/native'
 import { colors } from '../constants/colors'
 import { typography } from '../constants/typography'
@@ -26,8 +27,7 @@ export default function TimelineScreen({navigation}) {
 
   const loadTimeline = async () => {
     try {
-      const data = await fetchTimeline()
-      const streakCount = await fetchStreak()
+      const [data, streakCount] = await Promise.all([fetchTimeline(), fetchStreak()])
       setLogs(data)
       setStreak(streakCount)
     } catch (error) {
@@ -111,8 +111,8 @@ export default function TimelineScreen({navigation}) {
       >
 
         {/* Hero card */}
-        <TouchableOpacity style={styles.heroCard} activeOpacity={0.9} onPress={() => navigation.navigate('OutfitDetail', {logId: hero.id })}>
-          <Image source={{ uri: hero.photo_url }} style={styles.heroImage} />
+        <TouchableOpacity style={styles.heroCard} activeOpacity={0.9} onPress={() => navigation.navigate('OutfitDetail', { logId: hero.id, photoUrl: hero.photo_url })}>
+          <Image source={{ uri: hero.photo_url }} style={styles.heroImage} contentFit="cover" cachePolicy="memory-disk" priority="high" transition={200} />
           <View style={styles.heroOverlay} />
           <View style={styles.heroContent}>
             <Text style={styles.heroDate}>{formatDate(hero.logged_at)}</Text>
@@ -133,9 +133,9 @@ export default function TimelineScreen({navigation}) {
                 key={log.id}
                 style={styles.gridCard}
                 activeOpacity={0.9}
-                onPress={() => navigation.navigate('OutfitDetail', { logId: log.id })}
+                onPress={() => navigation.navigate('OutfitDetail', { logId: log.id, photoUrl: log.photo_url })}
               >
-                <Image source={{ uri: log.photo_url }} style={styles.gridImage} />
+                <Image source={{ uri: log.photo_url }} style={styles.gridImage} contentFit="cover" cachePolicy="memory-disk" transition={200} />
                 <View style={styles.gridOverlay} />
                 <View style={styles.gridContent}>
                   <Text style={styles.gridDate}>{formatShortDate(log.logged_at)}</Text>
@@ -196,7 +196,6 @@ const styles = StyleSheet.create({
   heroImage: {
     width: '100%',
     height: '100%',
-    resizeMode: 'cover',
   },
   heroOverlay: {
     position: 'absolute',
@@ -238,7 +237,6 @@ const styles = StyleSheet.create({
   gridImage: {
     width: '100%',
     height: '100%',
-    resizeMode: 'cover',
   },
   gridOverlay: {
     position: 'absolute',

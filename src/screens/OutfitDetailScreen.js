@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react'
 import {
-  View, Text, Image, ScrollView,
+  View, Text, ScrollView,
   StyleSheet, Alert
 } from 'react-native'
+import { Image } from 'expo-image'
 import { colors } from '../constants/colors'
 import { typography } from '../constants/typography'
 import { fetchLogById, deleteLog } from '../services/logService'
@@ -12,9 +13,8 @@ import ItemRow from '../components/ItemRow'
 import ItemTag from '../components/ItemTag'
 
 export default function OutfitDetailScreen({ route, navigation }) {
-  const { logId } = route.params
+  const { logId, photoUrl: initialPhotoUrl } = route.params
   const [log, setLog] = useState(null)
-  const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
     loadLog()
@@ -27,8 +27,6 @@ export default function OutfitDetailScreen({ route, navigation }) {
     } catch (error) {
       console.error('Error fetching log:', error)
       Alert.alert('Something went wrong', 'Failed to load this outfit.', [{ text: 'OK', onPress: () => navigation.goBack() }])
-    } finally {
-      setIsLoading(false)
     }
   }
 
@@ -69,10 +67,7 @@ export default function OutfitDetailScreen({ route, navigation }) {
     return log?.log_items?.map(li => li.items).filter(Boolean) || []
   }
 
-  if (isLoading || !log) {
-    return <View style={styles.container} />
-  }
-
+  const photoUri = log?.photo_url || initialPhotoUrl
   const items = getItems()
 
   return (
@@ -81,38 +76,40 @@ export default function OutfitDetailScreen({ route, navigation }) {
 
         {/* Full bleed photo */}
         <View style={styles.photoContainer}>
-          <Image source={{ uri: log.photo_url }} style={styles.photo} />
+          <Image source={{ uri: photoUri }} style={styles.photo} contentFit="cover" cachePolicy="memory-disk" priority="high" transition={200} />
 
           <DetailHeader onBack={() => navigation.goBack()} onDelete={handleDelete} />
         </View>
 
         {/* Content */}
-        <View style={styles.content}>
+        {log && (
+          <View style={styles.content}>
 
-          {/* Date */}
-          <Text style={styles.date}>{formatDate(log.logged_at)}</Text>
+            {/* Date */}
+            <Text style={styles.date}>{formatDate(log.logged_at)}</Text>
 
-          {/* Items */}
-          <View style={styles.section}>
-            <SectionTitle label="Items" />
-            {items.map((item, index) => (
-              <ItemRow key={index} item={item} />
-            ))}
-          </View>
-
-          {/* Worn with */}
-          {items.length > 1 && (
+            {/* Items */}
             <View style={styles.section}>
-              <SectionTitle label="Worn together" />
-              <View style={styles.tagRow}>
-                {items.map((item, index) => (
-                  <ItemTag key={index} name={item.name} variant="solid" />
-                ))}
-              </View>
+              <SectionTitle label="Items" />
+              {items.map((item, index) => (
+                <ItemRow key={index} item={item} />
+              ))}
             </View>
-          )}
 
-        </View>
+            {/* Worn with */}
+            {items.length > 1 && (
+              <View style={styles.section}>
+                <SectionTitle label="Worn together" />
+                <View style={styles.tagRow}>
+                  {items.map((item, index) => (
+                    <ItemTag key={index} name={item.name} variant="solid" />
+                  ))}
+                </View>
+              </View>
+            )}
+
+          </View>
+        )}
       </ScrollView>
     </View>
   )
@@ -130,7 +127,6 @@ const styles = StyleSheet.create({
   photo: {
     width: '100%',
     height: '100%',
-    resizeMode: 'cover',
   },
   content: {
     padding: 20,
