@@ -70,8 +70,12 @@ async function saveOrUpdateItem(item, userId) {
         user_id: userId,
         name: item.name,
         original_name: item.name,
+        aliases: [],
         category: item.category,
+        subcategory: item.subcategory || null,
         color: item.color,
+        brand: item.brand || null,
+        pattern: item.pattern || null,
         wear_count: 1,
       })
       .select()
